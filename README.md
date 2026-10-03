@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# Abhinav Deval
 
-First, run the development server:
+**Systems & Cloud-Native Software Engineer**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+B.Tech ECE at IIIT Kalyani (Class of 2029) · CNCF ecosystem contributor · GSSoC '26 Global Rank #111
+
+[**Live site →**](https://abhinavkdeval.vercel.app)
+
+![Next.js](https://img.shields.io/badge/Next.js-App_Router-000?logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38bdf8?logo=tailwindcss&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055ff?logo=framer&logoColor=white)
+
+</div>
+
+<!-- Add a screenshot or GIF at docs/preview.png, then uncomment: -->
+<!-- ![Portfolio preview](docs/preview.png) -->
+
+## What this is
+
+My personal portfolio, built as a small product instead of a static page. The centerpiece is a **live PrivPDF demo**: drop a PDF and it is compressed by a Dedicated Web Worker, entirely in your browser, with the results measured on the spot.
+
+## Highlights
+
+- **Live in-browser PDF compression.** A Web Worker running `pdf-lib` prunes metadata and repacks objects off the main thread. A "Load sample PDF" button generates a test file, so nothing needs to be uploaded.
+- **Measured, not claimed.** After each run the page reports size before and after, worker time, longest frame (to show the main thread stayed responsive), and network egress read from the browser's `PerformanceResourceTiming` API.
+- **⌘K / Ctrl+K command palette.** Jump between sections, copy my email, or open any profile with the keyboard.
+- **Cheap interactions.** The card spotlight updates CSS variables directly on the DOM node, so mouse movement causes no React re-renders. The live IST clock sits in its own memoized component, so it ticks without re-rendering the page.
+- **Accessible by default.** Keyboard focus rings, `aria` labels, and `prefers-reduced-motion` support for both CSS and Framer Motion animations.
+
+## How the demo works
+
+```mermaid
+flowchart LR
+    A[PDF dropped] --> B[Main thread: read ArrayBuffer]
+    B --> C[Dedicated Web Worker]
+    C --> D[pdf-lib: prune metadata, repack objects]
+    D --> E[Result Blob + download link]
+    B -.->|"rAF frame gaps"| F[Telemetry]
+    E -.->|"performance.now"| F
+    E -.->|"PerformanceResourceTiming"| F
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Honest limits:** the demo does lossless structure and metadata pruning only. Savings vary, and already-optimized or scanned PDFs may barely shrink (the full PrivPDF app adds configurable DPI downsampling for scans). The egress figure comes from the main thread's resource timing; the worker itself contains no `fetch` calls.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Next.js (App Router) · React · TypeScript · Tailwind CSS · Framer Motion · Lucide · pdf-lib
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+├── page.tsx             # The whole page: sections, live demo, command palette
+├── compress.worker.ts   # Web Worker that does the PDF compression
+├── layout.tsx           # Fonts and SEO metadata
+└── globals.css
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Run locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+git clone https://github.com/abhinavkdeval08-design/Abhinav-Portfolio.git
+cd Abhinav-Portfolio
+npm install
+npm run dev
+```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Other scripts: `npm run build` for a production build, `npm run lint` for ESLint.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Make it yours
+
+All profile links and contact details live in the `LINKS` object at the top of `app/page.tsx`. Update the data arrays right below it (metrics, projects, arsenal) and the rest of the page follows.
+
+## Deploy
+
+Deployed on [Vercel](https://vercel.com). Push to `main` and it redeploys automatically.
+
+## Contact
+
+I am looking for Software Engineering and Systems internships for 2026–2027.
+
+- Email: [abhinavkdeval08@gmail.com](mailto:abhinavkdeval08@gmail.com)
+- LinkedIn: [linkedin.com/in/abhinavdeval](https://linkedin.com/in/abhinavdeval)
+- GitHub: [abhinavkdeval08-design](https://github.com/abhinavkdeval08-design)
+- LeetCode: [abhinav_deval07](https://leetcode.com/u/abhinav_deval07/)
+- Codeforces: [abhinavkdeval29](https://codeforces.com/profile/abhinavkdeval29)
+---
