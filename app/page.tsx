@@ -30,13 +30,14 @@ const LINKS = {
   linkedin: "https://linkedin.com/in/abhinavdeval",
   email: "abhinavkdeval08@gmail.com",
   gssoc: "https://gssoc.girlscript.org/profile/2405e152-7589-4372-8564-14bec86302c8",
-  privpdfDemo: "https://privpdf.vercel.app", // VERIFY
-  privpdfRepo: `${GH}/PrivPDF`, // VERIFY
-  vibrodoRepo: `${GH}/vibrodo`, // VERIFY
+  enclaveDemo: "https://enclave-pdf.vercel.app",
+  enclaveRepo: `${GH}/EnclavePDF`,
+  vibrodoRepo: `${GH}/vibrodo`,
   pr1659: "https://github.com/layer5io/sistent/pull/1659",
   pr1660: "https://github.com/layer5io/sistent/pull/1660",
   pr22149: "https://github.com/meshery/meshery/pull/22149",
 };
+
 const socials = [
   { label: "GitHub", href: LINKS.github, icon: GithubIcon },
   { label: "LeetCode", href: LINKS.leetcode, icon: Code2 },
@@ -44,6 +45,7 @@ const socials = [
   { label: "Codolio", href: LINKS.codolio, icon: Flame },
   { label: "LinkedIn", href: LINKS.linkedin, icon: LinkedinIcon },
 ];
+
 const badges = ["IIIT Kalyani '29", "CNCF Ecosystem Contributor", "GSSoC '26 Global Rank #111 (Top 1%)", "LeetCode 1,590+ (112+ Day Streak)", "Codeforces Pupil (1,274)"];
 const metrics = [
   { v: "1,590", u: "", l: "LC Rating & CF Pupil (1,274)", s: "11 Official Contests Attended (5 Codeforces, 5 LeetCode, 1 AtCoder). Peak trajectory with 0-penalty contest performances." },
@@ -51,12 +53,14 @@ const metrics = [
   { v: "112+", u: "days", l: "Continuous Days Streak", s: "176 total active days with unbroken problem-solving consistency. 100-Days Badge 2026." },
   { v: "#111", u: "/ 47,926", l: "GSSoC '26 Top 1% (A-Tier)", s: "24,517 total points, 13/13 weeks unbroken streak. 34 PRs merged across 9 repos (13 badges earned)." },
 ];
+
 const arsenal = [
   { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "C", "SQL"] },
   { t: "Frontend & Runtimes", i: ["React", "React Native", "Next.js", "HTML5", "CSS3", "Tailwind CSS", "Web Workers", "HTML5 Canvas"] },
   { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "Redis", "Docker (Basics)", "Git/GitHub CI/CD"] },
   { t: "Algorithmic Strengths", i: ["Dynamic Programming (36+)", "Graphs/Trees", "Shortest Path & DSU", "Binary Search on Answer", "Monotonic Stacks", "Codeforces Div. 2/3"] },
 ];
+
 const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "Tailwind", "CNCF", "Meshery"];
 
 const glance = [
@@ -75,6 +79,7 @@ async function copyText(text: string) {
     document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
   }
 }
+
 const MAX_BYTES = 20 * 1024 * 1024;
 const egressSince = (from: number) => {
   const f = (performance.getEntriesByType("resource") as PerformanceResourceTiming[]).slice(from);
@@ -101,17 +106,21 @@ function Card({ children, className = "", glow = false }: { children: ReactNode;
     </div>
   );
 }
+
 const Tag = ({ children }: { children: ReactNode }) => (
   <span className="rounded-md border border-[#38bdf8]/20 bg-[#38bdf8]/10 px-2 py-0.5 font-mono text-[11px] font-medium text-[#38bdf8]">{children}</span>
 );
+
 const Title = ({ icon: Icon, children }: { icon: typeof Cpu; children: ReactNode }) => (
   <h2 className="mb-5 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-400">
     <Icon className="h-4 w-4 text-[#10b981]" aria-hidden="true" /> {children}
   </h2>
 );
+
 const Ext = ({ href, children, className = "" }: { href: string; children: ReactNode; className?: string }) => (
   <a href={href} target={href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener noreferrer" className={`${focusRing} ${className}`}>{children}</a>
 );
+
 const PR = ({ href, children }: { href: string; children: ReactNode }) => (
   <Ext href={href} className="inline-flex items-center gap-1 font-mono text-xs text-[#10b981] underline-offset-2 hover:underline">
     <GitPullRequest className="h-3 w-3" aria-hidden="true" />{children}
@@ -145,7 +154,7 @@ const Clock_ = memo(function ClockDisplay() {
   );
 });
 
-/* ---------- Live PrivPDF demo (real Web Worker + real measurements) ---------- */
+/* ---------- Live EnclavePDF demo (real Web Worker + real measurements) ---------- */
 type Result = { name: string; before: number; after: number; ms: number; req: number; egress: number; gap: number; url: string };
 
 function LiveDemo() {
@@ -157,7 +166,6 @@ function LiveDemo() {
   const worker = useRef<Worker | null>(null);
   const url = useRef<string | undefined>(undefined);
 
-  // Pre-warm so the worker script fetch never counts as a run-time request.
   useEffect(() => {
     worker.current = new Worker(new URL("./compress.worker.ts", import.meta.url), { type: "module" });
     return () => { worker.current?.terminate(); if (url.current) URL.revokeObjectURL(url.current); };
@@ -196,7 +204,7 @@ function LiveDemo() {
     try {
       const { PDFDocument, StandardFonts } = await import("pdf-lib");
       const doc = await PDFDocument.create();
-      doc.setTitle("PrivPDF sample"); doc.setAuthor("Abhinav Deval"); doc.setProducer("sample-generator");
+      doc.setTitle("EnclavePDF sample"); doc.setAuthor("Abhinav Deval"); doc.setProducer("sample-generator");
       const font = await doc.embedFont(StandardFonts.Helvetica);
       for (let p = 0; p < 60; p++) {
         const pg = doc.addPage([595, 842]);
@@ -221,7 +229,7 @@ function LiveDemo() {
   return (
     <Card glow className="p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="flex items-center gap-2 text-lg font-bold text-white"><ShieldCheck className="h-5 w-5 text-emerald-400" aria-hidden="true" /> Try PrivPDF right here</h3>
+        <h3 className="flex items-center gap-2 text-lg font-bold text-white"><ShieldCheck className="h-5 w-5 text-emerald-400" aria-hidden="true" /> Try EnclavePDF right here</h3>
         <span className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-emerald-400">Max 20 MB · In-Memory</span>
       </div>
       <p className="mt-1 max-w-2xl text-sm text-zinc-400">Drop a PDF. A Dedicated Web Worker prunes metadata and repacks objects in memory. The file never leaves this tab, and the numbers below are measured live.</p>
@@ -428,14 +436,14 @@ export default function Page() {
             <Title icon={Cpu}>Flagship Systems Projects</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Card className="flex flex-col">
-                <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-lg font-bold text-white">PrivPDF</h3><span className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-emerald-400">Zero-Egress</span></div>
+                <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-lg font-bold text-white">EnclavePDF</h3><span className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-emerald-400">Zero-Egress</span></div>
                 <p className="mt-0.5 text-xs text-zinc-400">Zero-Egress In-Browser PDF Compression Engine</p>
-                <div className="mt-3 flex flex-wrap gap-1.5">{["React", "TypeScript", "Dedicated Web Workers", "pdf-lib", "Vite", "Tailwind CSS"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
+                <div className="mt-3 flex flex-wrap gap-1.5">{["React", "TypeScript", "Dedicated Web Workers", "pdf-lib", "pdfjs-dist", "Vite", "Tailwind CSS"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
                 <p className="mt-3 text-sm leading-relaxed text-zinc-300">100% in-browser memory execution with zero network egress. Offloads CPU-intensive rasterization and downsampling pipelines to Dedicated Web Workers to prevent main-thread UI lag.</p>
                 <p className="mt-2 text-xs italic leading-relaxed text-zinc-400">Lossless vector/metadata pruning for text documents vs. configurable DPI downsampling for scanned files.</p>
                 <div className="mt-auto flex flex-wrap gap-2 border-t border-zinc-800 pt-3.5 [margin-top:1.25rem]">
-                  <Ext href={LINKS.privpdfDemo} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-zinc-950 hover:bg-emerald-400">Live Demo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
-                  <Ext href={LINKS.privpdfRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">GitHub Source <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
+                  <Ext href={LINKS.enclaveDemo} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-zinc-950 hover:bg-emerald-400">Live Demo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
+                  <Ext href={LINKS.enclaveRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">GitHub Source <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
                 </div>
               </Card>
               <Card className="flex flex-col">
