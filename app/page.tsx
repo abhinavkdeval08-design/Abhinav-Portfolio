@@ -46,11 +46,18 @@ const socials = [
   { label: "LinkedIn", href: LINKS.linkedin, icon: LinkedinIcon },
 ];
 
-const badges = ["IIIT Kalyani '29", "CNCF Ecosystem Contributor", "GSSoC '26 Global Rank #111 (Top 1%)", "LeetCode 1,590+ (112+ Day Streak)", "Codeforces Pupil (1,274)"];
+const badges = [
+  "IIIT Kalyani '29",
+  "CNCF Ecosystem Contributor",
+  "GSSoC '26 Global Rank #111 (Top 1%)",
+  "LeetCode 1,590+ (113+ Day Streak)",
+  "Codeforces Pupil (1,274)"
+];
+
 const metrics = [
   { v: "1,590", u: "", l: "LC Rating & CF Pupil (1,274)", s: "11 Official Contests Attended (5 Codeforces, 5 LeetCode, 1 AtCoder). Peak trajectory with 0-penalty contest performances." },
-  { v: "355+", u: "solved", l: "Problems Solved", s: "Algorithmic coverage across LeetCode, Codeforces, and GFG (verified via Codolio).", bar: true },
-  { v: "112+", u: "days", l: "Continuous Days Streak", s: "176 total active days with unbroken problem-solving consistency. 100-Days Badge 2026." },
+  { v: "357+", u: "solved", l: "Problems Solved", s: "Algorithmic coverage across LeetCode, Codeforces, and GFG (verified via Codolio).", bar: true },
+  { v: "113+", u: "days", l: "Continuous Days Streak", s: "177 total active days with unbroken problem-solving consistency. 100-Days Badge 2026." },
   { v: "#111", u: "/ 47,926", l: "GSSoC '26 Top 1% (A-Tier)", s: "24,517 total points, 13/13 weeks unbroken streak. 34 PRs merged across 9 repos (13 badges earned)." },
 ];
 
@@ -61,7 +68,7 @@ const arsenal = [
   { t: "Algorithmic Strengths", i: ["Dynamic Programming (36+)", "Graphs/Trees", "Shortest Path & DSU", "Binary Search on Answer", "Monotonic Stacks", "Codeforces Div. 2/3"] },
 ];
 
-const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "Tailwind", "CNCF", "Meshery"];
+const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery"];
 
 const glance = [
   { k: "Status", v: "Open to internships, 2026–27" },
@@ -419,10 +426,10 @@ export default function Page() {
                   <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">{m.l}</div>
                   {m.bar && (
                     <div className="mt-3">
-                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="144 easy, 165 medium, 46 hard">
+                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="144 easy, 167 medium, 46 hard">
                         <div style={{ width: "40.6%" }} className="bg-emerald-400" /><div style={{ width: "46.5%" }} className="bg-amber-400" /><div style={{ width: "12.9%" }} className="bg-rose-500" />
                       </div>
-                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">144 Easy</span><span className="text-amber-400">165 Med</span><span className="text-rose-400">46 Hard</span></div>
+                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">144 Easy</span><span className="text-amber-400">167 Med</span><span className="text-rose-400">46 Hard</span></div>
                     </div>
                   )}
                 </div>
