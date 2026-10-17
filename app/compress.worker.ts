@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+
 import { PDFDocument } from "pdf-lib";
 
 const ctx = self as unknown as DedicatedWorkerGlobalScope;
@@ -34,7 +35,9 @@ ctx.onmessage = async (e: MessageEvent<ArrayBuffer>) => {
 
     // Repack binary object streams
     const compressedBytes = await doc.save({ useObjectStreams: true });
-    ctx.postMessage({ ok: true, bytes: compressedBytes });
+
+    // Zero-copy transfer of compressed ArrayBuffer back to main thread
+    ctx.postMessage({ ok: true, bytes: compressedBytes }, [compressedBytes.buffer]);
   } catch (err) {
     ctx.postMessage({ ok: false, error: String(err) });
   }

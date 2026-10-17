@@ -21,27 +21,30 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://abhinavkdeval.vercel.app"),
-  title: "Abhinav Deval — Systems & Cloud-Native Software Engineer",
+  alternates: {
+    canonical: "/",
+  },
+  title: "Abhinav Deval — Backend & Cloud-Native Systems Engineer",
   description:
-    "B.Tech ECE at IIIT Kalyani. Building low-latency client-side systems, cloud-native tooling, and algorithmic infrastructure. CNCF Contributor, Creator of EnclavePDF & GSSoC Global Rank #111.",
+    "B.Tech ECE at IIIT Kalyani. Building real-time WebSocket systems, in-browser tooling and backend services. Open-source contributor to Layer5 (CNCF) and AsyncAPI. Creator of EnclavePDF. GSSoC '26 Global Rank #137.",
   keywords: [
     "Abhinav Deval",
-    "Systems Engineer",
+    "Backend Engineer",
     "IIIT Kalyani",
     "EnclavePDF",
-    "Zero-Egress",
     "Web Workers",
-    "CNCF",
-    "Meshery",
+    "WebSockets",
     "Layer5",
+    "AsyncAPI",
+    "GSSoC",
     "Next.js",
     "TypeScript",
   ],
   authors: [{ name: "Abhinav Deval", url: "https://github.com/abhinavkdeval08-design" }],
   openGraph: {
-    title: "Abhinav Deval — Systems & Cloud-Native Software Engineer",
+    title: "Abhinav Deval — Backend & Cloud-Native Systems Engineer",
     description:
-      "B.Tech ECE undergraduate at IIIT Kalyani. Architect of EnclavePDF (zero-egress in-browser compression engine) & CNCF Meshery contributor.",
+      "B.Tech ECE undergraduate at IIIT Kalyani. Creator of EnclavePDF (in-browser PDF compression, no uploads). Contributor to Layer5 (CNCF) and AsyncAPI.",
     url: "https://abhinavkdeval.vercel.app",
     siteName: "Abhinav Deval Portfolio",
     type: "website",
@@ -49,9 +52,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Abhinav Deval — Systems & Cloud-Native Software Engineer",
+    title: "Abhinav Deval — Backend & Cloud-Native Systems Engineer",
     description:
-      "B.Tech ECE undergraduate at IIIT Kalyani. Architect of EnclavePDF & CNCF Meshery contributor.",
+      "B.Tech ECE undergraduate at IIIT Kalyani. Creator of EnclavePDF. Contributor to Layer5 (CNCF) and AsyncAPI.",
   },
 };
 

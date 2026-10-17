@@ -32,10 +32,11 @@ const LINKS = {
   gssoc: "https://gssoc.girlscript.org/profile/2405e152-7589-4372-8564-14bec86302c8",
   enclaveDemo: "https://enclave-pdf.vercel.app",
   enclaveRepo: `${GH}/EnclavePDF`,
-  vibrodoRepo: `${GH}/vibrodo`,
+  vibrodoRepo: `${GH}/Vibrodo`,
   pr1659: "https://github.com/layer5io/sistent/pull/1659",
   pr1660: "https://github.com/layer5io/sistent/pull/1660",
   pr22149: "https://github.com/meshery/meshery/pull/22149",
+  pr2313: "https://github.com/asyncapi/cli/pull/2313",
 };
 
 const socials = [
@@ -48,32 +49,32 @@ const socials = [
 
 const badges = [
   "IIIT Kalyani '29",
-  "CNCF Ecosystem Contributor",
-  "GSSoC '26 Global Rank #111 (Top 1%)",
-  "LeetCode 1,590+ (113+ Day Streak)",
-  "Codeforces Pupil (1,274)"
+  "Contributing to Layer5 (CNCF) & AsyncAPI",
+  "GSSoC '26 Global Rank #137 (Top 1%)",
+  "LeetCode 1,710 (125-Day Streak)",
+  "Codeforces Pupil (1,359)",
 ];
 
 const metrics = [
-  { v: "1,590", u: "", l: "LC Rating & CF Pupil (1,274)", s: "11 Official Contests Attended (5 Codeforces, 5 LeetCode, 1 AtCoder). Peak trajectory with 0-penalty contest performances." },
-  { v: "357+", u: "solved", l: "Problems Solved", s: "Algorithmic coverage across LeetCode, Codeforces, and GFG (verified via Codolio).", bar: true },
-  { v: "113+", u: "days", l: "Continuous Days Streak", s: "177 total active days with unbroken problem-solving consistency. 100-Days Badge 2026." },
-  { v: "#111", u: "/ 47,926", l: "GSSoC '26 Top 1% (A-Tier)", s: "24,517 total points, 13/13 weeks unbroken streak. 34 PRs merged across 9 repos (13 badges earned)." },
+  { v: "1,710", u: "", l: "LC Rating & CF Pupil (1,359)", s: "LeetCode contest rating 1,710 (top 13.45%) and Codeforces Pupil 1,359. Contest history is tracked on Codolio." },
+  { v: "388", u: "solved", l: "Problems Solved", s: "LeetCode 295, GeeksforGeeks 46, Codeforces 47, tracked on Codolio. The bar shows the LeetCode split.", bar: true },
+  { v: "125", u: "days", l: "Solving Streak", s: "189 active days tracked on Codolio. 100 Days Badge 2026 on LeetCode." },
+  { v: "#137", u: "/ 47,924", l: "GSSoC '26 Top 1% (A-Tier)", s: "25,092 total points, active in 13 of 13 weeks. 34 PRs merged across 9 repos, 13 badges earned." },
 ];
 
 const arsenal = [
-  { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "C", "SQL"] },
-  { t: "Frontend & Runtimes", i: ["React", "React Native", "Next.js", "HTML5", "CSS3", "Tailwind CSS", "Web Workers", "HTML5 Canvas"] },
-  { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "Redis", "Docker (Basics)", "Git/GitHub CI/CD"] },
-  { t: "Algorithmic Strengths", i: ["Dynamic Programming (36+)", "Graphs/Trees", "Shortest Path & DSU", "Binary Search on Answer", "Monotonic Stacks", "Codeforces Div. 2/3"] },
+  { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "C", "Python", "SQL"] },
+  { t: "Frontend & Runtimes", i: ["React", "React Native", "Next.js", "HTML5", "CSS3", "Tailwind CSS", "Web Workers", "OffscreenCanvas"] },
+  { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "Redis", "Celery", "Docker (Basics)", "Git/GitHub"] },
+  { t: "Algorithmic Strengths (LeetCode)", i: ["Dynamic Programming (36)", "Game Theory (10)", "Divide & Conquer (9)", "Greedy (33)", "Hash Tables (64)", "Math (80)"] },
 ];
 
-const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery"];
+const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery", "AsyncAPI"];
 
 const glance = [
   { k: "Status", v: "Open to internships, 2026–27" },
   { k: "Studying", v: "B.Tech ECE, IIIT Kalyani '29" },
-  { k: "Focus", v: "Systems & cloud-native" },
+  { k: "Focus", v: "Backend & real-time systems" },
   { k: "Based in", v: "Kalyani, West Bengal (IST)" },
 ];
 
@@ -182,8 +183,8 @@ function LiveDemo() {
     const w = worker.current;
     if (!w) return;
     const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-    if (!isPdf) { setSt("err"); setMsg(`"${file.name}" PDF nahi hai. Sirf .pdf file drop karo.`); return; }
-    if (file.size > MAX_BYTES) { setSt("err"); setMsg(`File ${fmt(file.size)} hai. Limit 20 MB hai, isse chhoti PDF try karo.`); return; }
+    if (!isPdf) { setSt("err"); setMsg(`"${file.name}" is not a PDF. Drop a .pdf file.`); return; }
+    if (file.size > MAX_BYTES) { setSt("err"); setMsg(`This file is ${fmt(file.size)}. The demo limit is 20 MB, so try a smaller PDF.`); return; }
     setSt("run"); setMsg("");
     const reqStart = performance.getEntriesByType("resource").length;
     let last = performance.now(), gap = 0, raf = 0;
@@ -192,18 +193,20 @@ function LiveDemo() {
     const t0 = performance.now();
     let buf: ArrayBuffer;
     try { buf = await file.arrayBuffer(); }
-    catch { cancelAnimationFrame(raf); setSt("err"); setMsg("File read nahi hui. Dobara try karo."); return; }
+    catch { cancelAnimationFrame(raf); setSt("err"); setMsg("Could not read the file. Try again."); return; }
     w.onmessage = (e: MessageEvent<{ ok: boolean; bytes?: Uint8Array }>) => {
       cancelAnimationFrame(raf);
-      if (!e.data.ok || !e.data.bytes) { setSt("err"); setMsg("PDF parse nahi hui (encrypted ya corrupt ho sakti hai)."); return; }
+      if (!e.data.ok || !e.data.bytes) { setSt("err"); setMsg("Could not parse this PDF. It may be encrypted or corrupt."); return; }
       if (url.current) URL.revokeObjectURL(url.current);
       url.current = URL.createObjectURL(new Blob([e.data.bytes as BlobPart], { type: "application/pdf" }));
       const net = egressSince(reqStart);
       setRes({ name: file.name, before: file.size, after: e.data.bytes.length, ms: performance.now() - t0, req: net.req, egress: net.bytes, gap, url: url.current });
       setSt("done");
     };
-    w.onerror = () => { cancelAnimationFrame(raf); setSt("err"); setMsg("Worker fail hua."); };
-    w.postMessage(buf);
+    w.onerror = () => { cancelAnimationFrame(raf); setSt("err"); setMsg("The worker failed. Reload the page and try again."); };
+
+    // Zero-copy transfer of input ArrayBuffer into worker memory
+    w.postMessage(buf, [buf]);
   }, []);
 
   const sample = useCallback(async () => {
@@ -221,7 +224,7 @@ function LiveDemo() {
       setGen(false);
       await run(new File([bytes as BlobPart], "sample-document.pdf", { type: "application/pdf" }));
     } catch {
-      setGen(false); setSt("err"); setMsg("Sample PDF generate nahi ho paayi. Apni PDF drop karke dekho.");
+      setGen(false); setSt("err"); setMsg("Could not generate the sample PDF. Drop your own PDF instead.");
     }
   }, [run]);
 
@@ -274,7 +277,7 @@ function LiveDemo() {
               <a href={res.url} download={res.name.replace(/\.pdf$/i, "") + "-compressed.pdf"} className={`inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-zinc-950 hover:bg-emerald-400 ${focusRing}`}>
                 <Download className="h-3.5 w-3.5" aria-hidden="true" /> Download result
               </a>
-              <span className="text-[11px] text-zinc-500">Lossless structure pruning. Scanned PDFs need DPI downsampling (in the full app), so savings vary.</span>
+              <span className="text-[11px] text-zinc-500">This demo runs the lossless pass only. The full app also has an image mode (DPI downsampling) for scans, so savings vary.</span>
             </div>
           </div>
         )}
@@ -307,7 +310,7 @@ function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
     <AnimatePresence>
       {open && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 px-4 pt-[15vh]" onClick={onClose}>
-          <motion.div initial={{ y: -8, scale: 0.98 }} animate={{ y: 0, scale: 1 }} exit={{ y: -8, scale: 0.98 }} role="dialog" aria-label="Command palette"
+          <motion.div initial={{ y: -8, scale: 0.98 }} animate={{ y: 0, scale: 1 }} exit={{ y: -8, scale: 0.98 }} role="dialog" aria-modal="true" aria-label="Command palette"
             className="w-full max-w-lg overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-950 shadow-2xl" onClick={(e) => e.stopPropagation()} onKeyDown={onKey}>
             <div className="flex items-center gap-2 border-b border-zinc-800 px-3">
               <Search className="h-4 w-4 text-zinc-500" aria-hidden="true" />
@@ -383,9 +386,9 @@ export default function Page() {
 
             <p className="mt-10 font-mono text-sm text-zinc-400"><span className="wave inline-block origin-[70%_70%]" aria-hidden="true">👋</span> Hey, I&apos;m</p>
             <h1 className="mt-2 text-5xl font-semibold tracking-tighter text-white sm:text-7xl lg:text-8xl">Abhinav Deval</h1>
-            <p className="mt-4 font-mono text-lg font-medium text-emerald-400 sm:text-2xl">Systems &amp; Cloud-Native Software Engineer</p>
+            <p className="mt-4 font-mono text-lg font-medium text-emerald-400 sm:text-2xl">Backend &amp; Real-Time Systems Engineer</p>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-              I am a B.Tech ECE student at IIIT Kalyani who likes making things fast: browser tools that never touch a server, real-time sync across devices, and production PRs in CNCF projects. Run the live demo below, then check the receipts.
+              I am a B.Tech ECE student at IIIT Kalyani who likes making things fast: browser tools that never touch a server, real-time sync across devices, and open-source PRs in Layer5 (CNCF) and AsyncAPI. Run the live demo below, then check the receipts.
             </p>
             <ul className="mt-6 flex flex-wrap gap-2">
               {badges.map((b) => <li key={b} className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 font-mono text-[11px] text-zinc-300">{b}</li>)}
@@ -426,10 +429,10 @@ export default function Page() {
                   <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">{m.l}</div>
                   {m.bar && (
                     <div className="mt-3">
-                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="144 easy, 167 medium, 46 hard">
-                        <div style={{ width: "40.6%" }} className="bg-emerald-400" /><div style={{ width: "46.5%" }} className="bg-amber-400" /><div style={{ width: "12.9%" }} className="bg-rose-500" />
+                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="LeetCode: 112 easy, 151 medium, 32 hard">
+                        <div style={{ width: "38%" }} className="bg-emerald-400" /><div style={{ width: "51.2%" }} className="bg-amber-400" /><div style={{ width: "10.8%" }} className="bg-rose-500" />
                       </div>
-                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">144 Easy</span><span className="text-amber-400">167 Med</span><span className="text-rose-400">46 Hard</span></div>
+                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">112 Easy</span><span className="text-amber-400">151 Med</span><span className="text-rose-400">32 Hard</span></div>
                     </div>
                   )}
                 </div>
@@ -443,11 +446,11 @@ export default function Page() {
             <Title icon={Cpu}>Flagship Systems Projects</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Card className="flex flex-col">
-                <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-lg font-bold text-white">EnclavePDF</h3><span className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-emerald-400">Zero-Egress</span></div>
-                <p className="mt-0.5 text-xs text-zinc-400">Zero-Egress In-Browser PDF Compression Engine</p>
-                <div className="mt-3 flex flex-wrap gap-1.5">{["React", "TypeScript", "Dedicated Web Workers", "pdf-lib", "pdfjs-dist", "Vite", "Tailwind CSS"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">100% in-browser memory execution with zero network egress. Offloads CPU-intensive rasterization and downsampling pipelines to Dedicated Web Workers to prevent main-thread UI lag.</p>
-                <p className="mt-2 text-xs italic leading-relaxed text-zinc-400">Lossless vector/metadata pruning for text documents vs. configurable DPI downsampling for scanned files.</p>
+                <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-lg font-bold text-white">EnclavePDF</h3><span className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-emerald-400">No uploads</span></div>
+                <p className="mt-0.5 text-xs text-zinc-400">In-browser PDF compression, the file never leaves the tab</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">{["React", "TypeScript", "Web Workers", "OffscreenCanvas", "pdf-lib", "pdfjs-dist", "Vite"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Runs entirely in the browser with no backend. Rendering and PDF rebuild happen in a Web Worker: image mode first (pdf.js, OffscreenCanvas, JPEG, pdf-lib), then a lossless object-stream rewrite if that is not smaller, then the original file if neither wins.</p>
+                <p className="mt-2 text-xs leading-relaxed text-zinc-400">Measured in image mode: 10.1 MB to 4.9 MB (52%) and 1.5 MB to 235.7 KB (85%). Image mode rasterizes pages, so text is no longer selectable.</p>
                 <div className="mt-auto flex flex-wrap gap-2 border-t border-zinc-800 pt-3.5 [margin-top:1.25rem]">
                   <Ext href={LINKS.enclaveDemo} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-zinc-950 hover:bg-emerald-400">Live Demo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
                   <Ext href={LINKS.enclaveRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">GitHub Source <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
@@ -458,11 +461,11 @@ export default function Page() {
                   <h3 className="flex items-center gap-2 text-lg font-bold text-white">Vibrodo <Radio className="h-4 w-4 text-[#38bdf8]" aria-hidden="true" /></h3>
                   <div className="flex h-6 items-center gap-0.5" aria-hidden="true">{[0, 0.2, 0.4, 0.1, 0.3].map((d, i) => <span key={i} className="bar h-5 w-1 rounded-full bg-emerald-400" style={{ animationDelay: `${d}s` }} />)}</div>
                 </div>
-                <p className="mt-0.5 text-xs text-zinc-400">Real-Time Synchronized Audio Platform</p>
+                <p className="mt-0.5 text-xs text-zinc-400">Real-time synchronized audio platform · in development</p>
                 <div className="mt-3 flex flex-wrap gap-1.5">{["React Native", "WebSockets", "Node.js", "State Machines"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Multi-device real-time audio playback synchronization using WebSockets with fault-tolerant background lifecycle reconciliation.</p>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Cross-platform audio streaming client with multi-device room synchronization over WebSockets, client-side state reconciliation, and background audio lifecycle handling.</p>
                 <div className="mt-auto flex flex-wrap gap-2 border-t border-zinc-800 pt-3.5 [margin-top:1.25rem]">
-                  <Ext href={LINKS.vibrodoRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">Architecture &amp; Client Repo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
+                  <Ext href={LINKS.vibrodoRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">GitHub Repo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
                 </div>
               </Card>
             </div>
@@ -470,19 +473,20 @@ export default function Page() {
 
           {/* Open source */}
           <section id="oss" aria-label="Open source" className="scroll-mt-4">
-            <Title icon={Layers}>Open Source &amp; Backend Infrastructure</Title>
+            <Title icon={Layers}>Open Source &amp; Backend Work</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Card>
-                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Server className="h-4 w-4 text-emerald-400" aria-hidden="true" /> CNCF / Meshery &amp; Layer5</h3><span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-300">2 PRs · 1 Review</span></div>
+                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Server className="h-4 w-4 text-emerald-400" aria-hidden="true" /> Layer5 (CNCF) &amp; AsyncAPI</h3><span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-300">3 open PRs · 1 review</span></div>
                 <ul className="mt-3 space-y-3 text-sm leading-relaxed text-zinc-400">
-                  <li><span className="font-semibold text-zinc-200">Component Engineering: </span>Authored accessible, theme-tokenized UI components (FormHelperText <PR href={LINKS.pr1659}>PR #1659</PR>, SubscriptionTable <PR href={LINKS.pr1660}>PR #1660</PR>) in <span className="font-mono text-zinc-300">layer5io/sistent</span> with strict TypeScript contracts.</li>
-                  <li><span className="font-semibold text-zinc-200">Architectural Peer Reviews: </span>Reviewed <span className="font-mono text-zinc-300">meshery/meshery</span> (<PR href={LINKS.pr22149}>PR #22149</PR>), diagnosing Next.js <span className="font-mono text-zinc-300">router.query</span> decoding invariants, isolating bare &apos;%&apos; <span className="font-mono text-zinc-300">URIError: URI malformed</span> crash vectors, and validating 76+ E2E test suites.</li>
+                  <li><span className="font-semibold text-zinc-200">Layer5 Sistent: </span>Two open PRs in <span className="font-mono text-zinc-300">layer5io/sistent</span>: FormHelperText (<PR href={LINKS.pr1659}>PR #1659</PR>) and SubscriptionTable (<PR href={LINKS.pr1660}>PR #1660</PR>). Typed props, theme tokens, accessible labels and unit tests. Under review, feedback addressed.</li>
+                  <li><span className="font-semibold text-zinc-200">AsyncAPI CLI: </span>Fixed <span className="font-mono text-zinc-300">asyncapi diff</span> printing an empty <span className="font-mono text-zinc-300">ValidationError</span> on unparsable documents (<PR href={LINKS.pr2313}>PR #2313</PR>, open).</li>
+                  <li><span className="font-semibold text-zinc-200">Meshery review: </span>Reviewed a table-search crash fix in <span className="font-mono text-zinc-300">meshery/meshery</span> (<PR href={LINKS.pr22149}>PR #22149</PR>, by @mateusslezinsky). Explained why a second <span className="font-mono text-zinc-300">decodeURIComponent</span> on <span className="font-mono text-zinc-300">router.query</span> throws <span className="font-mono text-zinc-300">URIError</span> on a bare &apos;%&apos;, since Next.js already decodes it.</li>
                 </ul>
               </Card>
               <Card>
-                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Flame className="h-4 w-4 text-emerald-400" aria-hidden="true" /> GSSoC &amp; Backend Core</h3><Ext href={LINKS.gssoc} className="shrink-0 font-mono text-xs text-emerald-400 hover:underline">Verify Rank #111 ↗</Ext></div>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-400">Maintained a 13/13 weeks unbroken contribution streak across 9 repositories. Built backend infrastructure with Redis rate-limiting middleware, Celery async background worker queues, and secure JWT/OTP authentication workflows.</p>
-                <div className="mt-4 flex flex-wrap gap-1.5">{["Redis Throttling", "Celery Workers", "JWT / OTP Auth", "Performance (CLS)", "CI/CD Submodules"].map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Flame className="h-4 w-4 text-emerald-400" aria-hidden="true" /> GSSoC &amp; Backend Core</h3><Ext href={LINKS.gssoc} className="shrink-0 font-mono text-xs text-emerald-400 hover:underline">Verify Rank #137 ↗</Ext></div>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-400">34 merged PRs across 9 repositories, active in all 13 program weeks. Backend work includes Redis rate-limiting middleware, Celery worker queues and Swagger/OpenAPI docs (Agri-Vision), plus JWT/OTP auth workflows (Eventra).</p>
+                <div className="mt-4 flex flex-wrap gap-1.5">{["Redis Rate Limiting", "Celery Workers", "JWT / OTP Auth", "Performance (CLS)", "CI/CD Submodules"].map((t) => <Tag key={t}>{t}</Tag>)}</div>
               </Card>
             </div>
           </section>
@@ -499,7 +503,7 @@ export default function Page() {
           <section aria-label="Roadmap">
             <Title icon={Compass}>Roadmap &amp; Vision</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {[{ t: "GSoC 2027", x: "Core contributions to CNCF cloud-native infrastructure, CLI tooling for mesheryctl, and distributed backend microservices." }, { t: "Class of 2029 Target", x: "High-frequency, low-latency, scalable backend infrastructure at top-tier product and fintech firms." }].map((m) => (
+            {[{ t: "GSoC 2027", x: "Shortlisting orgs where I already contribute (Layer5/Meshery, AsyncAPI). Working through issues and reviews there before applications open." }, { t: "Class of 2029", x: "Backend and real-time systems roles: building reliable, low-latency services and shipping them." }].map((m) => (
               <Card key={m.t}><div className="flex gap-3"><Flag className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" aria-hidden="true" /><div><h3 className="font-mono text-xs font-bold uppercase tracking-wide text-emerald-400">{m.t}</h3><p className="mt-1 text-xs leading-relaxed text-zinc-400">{m.x}</p></div></div></Card>
             ))}
           </div>
@@ -513,10 +517,10 @@ export default function Page() {
             </div>
             <div className="p-8 sm:p-10">
               <p className="font-mono text-xs text-emerald-400">$ cat intent.md</p>
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-300 sm:text-base">I am actively seeking high-impact Software Engineering and Systems internships for 2026–2027. My focus is on architecting low-latency backend infrastructure, client-side performance tooling, and distributed systems. Whether it&apos;s shipping core cloud-native features, solving complex algorithmic challenges, or optimizing memory-critical runtimes, I am ready to build.</p>
+              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-300 sm:text-base">I am looking for Software Engineering internships for 2026–2027, mostly backend and real-time systems. I like shipping reliable services, client-side performance work and open-source contributions. If you have a role or a project that fits, I would love to hear from you.</p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <a href={`mailto:${LINKS.email}`} className={`inline-flex max-w-full items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-colors hover:bg-emerald-400 ${focusRing}`}>
-                  <Mail className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="truncate">✉️ Get In Touch: {LINKS.email}</span>
+                  <Mail className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="truncate">Get in touch: {LINKS.email}</span>
                 </a>
                 <CopyEmail idle="Copy Email" done="Copied!" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white" />
               </div>
