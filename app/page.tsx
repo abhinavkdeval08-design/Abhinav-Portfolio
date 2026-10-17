@@ -74,7 +74,7 @@ const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML"
 const glance = [
   { k: "Status", v: "Open to internships, 2026–27" },
   { k: "Studying", v: "B.Tech ECE, IIIT Kalyani '29" },
-  { k: "Focus", v: "Backend & real-time systems" },
+  { k: "Focus", v: "Backend & cloud-native systems" },
   { k: "Based in", v: "Kalyani, West Bengal (IST)" },
 ];
 
@@ -386,7 +386,7 @@ export default function Page() {
 
             <p className="mt-10 font-mono text-sm text-zinc-400"><span className="wave inline-block origin-[70%_70%]" aria-hidden="true">👋</span> Hey, I&apos;m</p>
             <h1 className="mt-2 text-5xl font-semibold tracking-tighter text-white sm:text-7xl lg:text-8xl">Abhinav Deval</h1>
-            <p className="mt-4 font-mono text-lg font-medium text-emerald-400 sm:text-2xl">Backend &amp; Real-Time Systems Engineer</p>
+            <p className="mt-4 font-mono text-lg font-medium text-emerald-400 sm:text-2xl">Backend &amp; Cloud-Native Systems Engineer</p>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
               I am a B.Tech ECE student at IIIT Kalyani who likes making things fast: browser tools that never touch a server, real-time sync across devices, and open-source PRs in Layer5 (CNCF) and AsyncAPI. Run the live demo below, then check the receipts.
             </p>
@@ -503,7 +503,7 @@ export default function Page() {
           <section aria-label="Roadmap">
             <Title icon={Compass}>Roadmap &amp; Vision</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {[{ t: "GSoC 2027", x: "Shortlisting orgs where I already contribute (Layer5/Meshery, AsyncAPI). Working through issues and reviews there before applications open." }, { t: "Class of 2029", x: "Backend and real-time systems roles: building reliable, low-latency services and shipping them." }].map((m) => (
+            {[{ t: "GSoC 2027", x: "Shortlisting orgs where I already contribute (Layer5/Meshery, AsyncAPI). Working through issues and reviews there before applications open." }, { t: "Class of 2029", x: "Backend and cloud-native systems roles: building reliable, low-latency services and shipping them." }].map((m) => (
               <Card key={m.t}><div className="flex gap-3"><Flag className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" aria-hidden="true" /><div><h3 className="font-mono text-xs font-bold uppercase tracking-wide text-emerald-400">{m.t}</h3><p className="mt-1 text-xs leading-relaxed text-zinc-400">{m.x}</p></div></div></Card>
             ))}
           </div>
@@ -517,7 +517,7 @@ export default function Page() {
             </div>
             <div className="p-8 sm:p-10">
               <p className="font-mono text-xs text-emerald-400">$ cat intent.md</p>
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-300 sm:text-base">I am looking for Software Engineering internships for 2026–2027, mostly backend and real-time systems. I like shipping reliable services, client-side performance work and open-source contributions. If you have a role or a project that fits, I would love to hear from you.</p>
+              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-300 sm:text-base">I am looking for Software Engineering internships for 2026–2027, focusing on backend, cloud-native infrastructure, and real-time systems. I like shipping reliable services, client-side performance work and open-source contributions. If you have a role or a project that fits, I would love to hear from you.</p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <a href={`mailto:${LINKS.email}`} className={`inline-flex max-w-full items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-colors hover:bg-emerald-400 ${focusRing}`}>
                   <Mail className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="truncate">Get in touch: {LINKS.email}</span>
