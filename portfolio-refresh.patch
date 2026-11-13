@@ -1,0 +1,628 @@
+From 8196ed8c78010203cda59edadc8c940fb0c81f88 Mon Sep 17 00:00:00 2001
+From: Abhinav Deval <abhinavkdeval08@gmail.com>
+Date: Fri, 13 Nov 2026 11:13:02 +0000
+Subject: [PATCH] feat(portfolio): add shipped-work proof, refresh stats,
+ sticky nav and SEO
+
+- Add "Shipped & Merged" section linking Meshery v1.0.77 and Blowhorn PRs,
+  with maintainer quotes
+- Refresh stale numbers (streak, rank wording, CF rating, in-review PRs)
+- Add sticky nav, fix command palette state reset (lint error)
+- Add OG/Twitter image, Person JSON-LD, robots and sitemap
+- Fix globals.css light/Arial defaults, drop unused template assets
+- Update README to match
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Miw2b63ST2DrBTNYVBjUQJ
+Signed-off-by: Abhinav Deval <abhinavkdeval08@gmail.com>
+---
+ README.md               |   9 ++-
+ app/_og.tsx             |  43 ++++++++++++
+ app/globals.css         |  17 +----
+ app/layout.tsx          |  28 +++++++-
+ app/opengraph-image.tsx |   9 +++
+ app/page.tsx            | 151 ++++++++++++++++++++++++++++++----------
+ app/robots.ts           |   8 +++
+ app/sitemap.ts          |   5 ++
+ app/twitter-image.tsx   |   9 +++
+ public/file.svg         |   1 -
+ public/globe.svg        |   1 -
+ public/next.svg         |   1 -
+ public/vercel.svg       |   1 -
+ public/window.svg       |   1 -
+ 14 files changed, 221 insertions(+), 63 deletions(-)
+ create mode 100644 app/_og.tsx
+ create mode 100644 app/opengraph-image.tsx
+ create mode 100644 app/robots.ts
+ create mode 100644 app/sitemap.ts
+ create mode 100644 app/twitter-image.tsx
+ delete mode 100644 public/file.svg
+ delete mode 100644 public/globe.svg
+ delete mode 100644 public/next.svg
+ delete mode 100644 public/vercel.svg
+ delete mode 100644 public/window.svg
+
+diff --git a/README.md b/README.md
+index 51d954d..ab56e24 100644
+--- a/README.md
++++ b/README.md
+@@ -4,7 +4,7 @@
+ 
+ **Systems & Cloud-Native Software Engineer**
+ 
+-B.Tech ECE at IIIT Kalyani (Class of 2029) · CNCF Meshery contributor · GSSoC '26 Global Rank #111
++B.Tech ECE at IIIT Kalyani (Class of 2029) · Fixes shipped in Meshery v1.0.77 (CNCF) · GSSoC '26 Global Rank #137 of 47,924
+ 
+ [**Portfolio →**](https://abhinavkdeval.vercel.app) · [**EnclavePDF (live) →**](https://enclave-pdf.vercel.app) · [**EnclavePDF (repo) →**](https://github.com/abhinavkdeval08-design/EnclavePDF)
+ 
+@@ -41,6 +41,7 @@ My personal portfolio, built as a small product instead of a static page. The ce
+   - worker time
+   - longest frame, checked against the 16 ms budget, to show the main thread stayed responsive (`requestAnimationFrame` gaps)
+   - outbound network requests, read from the `PerformanceResourceTiming` API (expected: 0)
++- **Receipts, not claims.** A "Shipped & Merged" section links every PR to its source: two fixes in the official [Meshery v1.0.77 release](https://github.com/meshery/meshery/releases/tag/v1.0.77) (Go CLI and UI) and security and reliability fixes merged in Blowhorn's production worker, with maintainer quotes.
+ - **⌘K / Ctrl+K command palette.** Jump between sections, copy my email, or open any profile with the keyboard.
+ - **Cheap interactions.** The card spotlight updates CSS variables directly on the DOM node, so mouse movement causes no React re-renders. The live IST clock sits in its own memoized component, so it ticks without re-rendering the page.
+ - **Accessible by default.** Keyboard focus rings, `aria` labels, and `prefers-reduced-motion` support for both CSS and Framer Motion animations.
+@@ -70,7 +71,9 @@ Next.js (App Router) · React · TypeScript · Tailwind CSS · Framer Motion ·
+ app/
+ ├── page.tsx             # The whole page: sections, live demo, command palette
+ ├── compress.worker.ts   # Web Worker that does the PDF compression
+-├── layout.tsx           # Fonts and SEO metadata
++├── layout.tsx           # Fonts, SEO metadata and Person JSON-LD
++├── opengraph-image.tsx  # Social preview image (shared renderer in _og.tsx)
++├── robots.ts / sitemap.ts
+ └── globals.css
+ ```
+ 
+@@ -89,7 +92,7 @@ Other scripts: `npm run build` for a production build, `npm run lint` for ESLint
+ 
+ ## Make it yours
+ 
+-All profile links and contact details live in the `LINKS` object at the top of `app/page.tsx`. Update the data arrays right below it (metrics, projects, arsenal) and the rest of the page follows.
++All profile links and contact details live in the `LINKS` object at the top of `app/page.tsx`. Update the data arrays right below it (metrics, shipped work, arsenal) and the rest of the page follows.
+ 
+ ## Deploy
+ 
+diff --git a/app/_og.tsx b/app/_og.tsx
+new file mode 100644
+index 0000000..e0df486
+--- /dev/null
++++ b/app/_og.tsx
+@@ -0,0 +1,43 @@
++import { ImageResponse } from "next/og";
++
++export const OG_SIZE = { width: 1200, height: 630 };
++
++export function renderOg() {
++  return new ImageResponse(
++    (
++      <div
++        style={{
++          width: "100%",
++          height: "100%",
++          display: "flex",
++          flexDirection: "column",
++          justifyContent: "space-between",
++          padding: 72,
++          background: "#09090b",
++          backgroundImage:
++            "radial-gradient(circle at 15% 0%, rgba(16,185,129,0.28), transparent 55%), radial-gradient(circle at 95% 10%, rgba(56,189,248,0.2), transparent 50%)",
++          color: "#fafafa",
++        }}
++      >
++        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 28, color: "#34d399" }}>
++          <div style={{ width: 14, height: 14, borderRadius: 14, background: "#10b981" }} />
++          Open to internships 2026–2027
++        </div>
++
++        <div style={{ display: "flex", flexDirection: "column" }}>
++          <div style={{ fontSize: 108, fontWeight: 700, letterSpacing: -4, lineHeight: 1.02 }}>Abhinav Deval</div>
++          <div style={{ marginTop: 18, fontSize: 40, color: "#34d399" }}>Backend &amp; Cloud-Native Systems Engineer</div>
++          <div style={{ marginTop: 22, fontSize: 28, color: "#a1a1aa" }}>
++            Shipped in Meshery v1.0.77 (CNCF) · GSSoC &apos;26 #137 of 47,924 · IIIT Kalyani &apos;29
++          </div>
++        </div>
++
++        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 26, color: "#71717a" }}>
++          <span>abhinavkdeval.vercel.app</span>
++          <span>Go · TypeScript · Node.js · WebSockets</span>
++        </div>
++      </div>
++    ),
++    { ...OG_SIZE },
++  );
++}
+diff --git a/app/globals.css b/app/globals.css
+index a2dc41e..d826af8 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -1,26 +1,15 @@
+ @import "tailwindcss";
+ 
+ :root {
+-  --background: #ffffff;
+-  --foreground: #171717;
++  color-scheme: dark;
+ }
+ 
+ @theme inline {
+-  --color-background: var(--background);
+-  --color-foreground: var(--foreground);
+   --font-sans: var(--font-geist-sans);
+   --font-mono: var(--font-geist-mono);
+ }
+ 
+-@media (prefers-color-scheme: dark) {
+-  :root {
+-    --background: #0a0a0a;
+-    --foreground: #ededed;
+-  }
+-}
+-
+ body {
+-  background: var(--background);
+-  color: var(--foreground);
+-  font-family: Arial, Helvetica, sans-serif;
++  background: #09090b;
++  color: #d4d4d8;
+ }
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 87e0502..141b3f5 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -26,7 +26,7 @@ export const metadata: Metadata = {
+   },
+   title: "Abhinav Deval — Backend & Cloud-Native Systems Engineer",
+   description:
+-    "B.Tech ECE at IIIT Kalyani. Building real-time WebSocket systems, in-browser tooling and backend services. Open-source contributor to Layer5 (CNCF) and AsyncAPI. Creator of EnclavePDF. GSSoC '26 Global Rank #137.",
++    "B.Tech ECE at IIIT Kalyani. Building real-time WebSocket systems, in-browser tooling and backend services. Fixes shipped in Meshery v1.0.77 (CNCF), plus open-source work in Layer5 and AsyncAPI. Creator of EnclavePDF. GSSoC '26 Global Rank #137.",
+   keywords: [
+     "Abhinav Deval",
+     "Backend Engineer",
+@@ -34,6 +34,9 @@ export const metadata: Metadata = {
+     "EnclavePDF",
+     "Web Workers",
+     "WebSockets",
++    "Meshery",
++    "CNCF",
++    "Go",
+     "Layer5",
+     "AsyncAPI",
+     "GSSoC",
+@@ -44,7 +47,7 @@ export const metadata: Metadata = {
+   openGraph: {
+     title: "Abhinav Deval — Backend & Cloud-Native Systems Engineer",
+     description:
+-      "B.Tech ECE undergraduate at IIIT Kalyani. Creator of EnclavePDF (in-browser PDF compression, no uploads). Contributor to Layer5 (CNCF) and AsyncAPI.",
++      "B.Tech ECE undergraduate at IIIT Kalyani. Creator of EnclavePDF (in-browser PDF compression, no uploads). Fixes shipped in Meshery v1.0.77 (CNCF); contributor to Layer5 and AsyncAPI.",
+     url: "https://abhinavkdeval.vercel.app",
+     siteName: "Abhinav Deval Portfolio",
+     type: "website",
+@@ -54,10 +57,25 @@ export const metadata: Metadata = {
+     card: "summary_large_image",
+     title: "Abhinav Deval — Backend & Cloud-Native Systems Engineer",
+     description:
+-      "B.Tech ECE undergraduate at IIIT Kalyani. Creator of EnclavePDF. Contributor to Layer5 (CNCF) and AsyncAPI.",
++      "B.Tech ECE undergraduate at IIIT Kalyani. Creator of EnclavePDF. Fixes shipped in Meshery v1.0.77 (CNCF).",
+   },
+ };
+ 
++const personJsonLd = {
++  "@context": "https://schema.org",
++  "@type": "Person",
++  name: "Abhinav Deval",
++  url: "https://abhinavkdeval.vercel.app",
++  jobTitle: "Backend & Cloud-Native Systems Engineer",
++  alumniOf: { "@type": "CollegeOrUniversity", name: "IIIT Kalyani" },
++  sameAs: [
++    "https://github.com/abhinavkdeval08-design",
++    "https://linkedin.com/in/abhinavdeval",
++    "https://leetcode.com/u/abhinav_deval07/",
++    "https://codeforces.com/profile/abhinavkdeval29",
++  ],
++};
++
+ export default function RootLayout({
+   children,
+ }: Readonly<{
+@@ -69,6 +87,10 @@ export default function RootLayout({
+       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+     >
+       <body className="min-h-full flex flex-col bg-[#09090b] text-zinc-300 selection:bg-emerald-500/30 font-sans">
++        <script
++          type="application/ld+json"
++          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c") }}
++        />
+         {children}
+       </body>
+     </html>
+diff --git a/app/opengraph-image.tsx b/app/opengraph-image.tsx
+new file mode 100644
+index 0000000..395ae87
+--- /dev/null
++++ b/app/opengraph-image.tsx
+@@ -0,0 +1,9 @@
++import { renderOg } from "./_og";
++
++export const alt = "Abhinav Deval — Backend & Cloud-Native Systems Engineer";
++export const size = { width: 1200, height: 630 };
++export const contentType = "image/png";
++
++export default function Image() {
++  return renderOg();
++}
+diff --git a/app/page.tsx b/app/page.tsx
+index 2549818..1188576 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -5,6 +5,7 @@ import { motion, AnimatePresence, MotionConfig } from "framer-motion";
+ import {
+   Code2, Trophy, Mail, ExternalLink, GitPullRequest, Flame, Cpu, Server, Layers, Flag,
+   Terminal, Compass, Info, Check, Copy, Clock, MapPin, ShieldCheck, Radio, Search, UploadCloud, Download, Command,
++  Rocket, Quote,
+ } from "lucide-react";
+ 
+ /* ---------- Brand icons ---------- */
+@@ -33,12 +34,17 @@ const LINKS = {
+   enclaveDemo: "https://enclave-pdf.vercel.app",
+   enclaveRepo: `${GH}/EnclavePDF`,
+   vibrodoRepo: `${GH}/Vibrodo`,
++  mesheryRelease: "https://github.com/meshery/meshery/releases/tag/v1.0.77",
+   pr1659: "https://github.com/layer5io/sistent/pull/1659",
+   pr1660: "https://github.com/layer5io/sistent/pull/1660",
+   pr22149: "https://github.com/meshery/meshery/pull/22149",
++  pr23363: "https://github.com/meshery/meshery/pull/23363",
++  pr86: "https://github.com/meshery-extensions/mesheryctl-axi/pull/86",
+   pr2313: "https://github.com/asyncapi/cli/pull/2313",
+ };
+ 
++const BH = "https://github.com/blowhorn-ai/blowhorn-site/pull";
++
+ const socials = [
+   { label: "GitHub", href: LINKS.github, icon: GithubIcon },
+   { label: "LeetCode", href: LINKS.leetcode, icon: Code2 },
+@@ -49,27 +55,51 @@ const socials = [
+ 
+ const badges = [
+   "IIIT Kalyani '29",
+-  "Contributing to Layer5 (CNCF) & AsyncAPI",
+-  "GSSoC '26 Global Rank #137 (Top 1%)",
+-  "LeetCode 1,710 (125-Day Streak)",
+-  "Codeforces Pupil (1,359)",
++  "Shipped in Meshery v1.0.77 (CNCF)",
++  "#4 human contributor @ Blowhorn",
++  "Layer5 (CNCF) & AsyncAPI contributor",
++  "GSSoC '26 Rank #137 of 47,924 (Top 0.3%)",
++  "LeetCode 1,710 (136-Day Best Streak)",
++  "Codeforces Pupil (1,361)",
+ ];
+ 
+ const metrics = [
+-  { v: "1,710", u: "", l: "LC Rating & CF Pupil (1,359)", s: "LeetCode contest rating 1,710 (top 13.45%) and Codeforces Pupil 1,359. Contest history is tracked on Codolio." },
+-  { v: "388", u: "solved", l: "Problems Solved", s: "LeetCode 295, GeeksforGeeks 46, Codeforces 47, tracked on Codolio. The bar shows the LeetCode split.", bar: true },
+-  { v: "125", u: "days", l: "Solving Streak", s: "189 active days tracked on Codolio. 100 Days Badge 2026 on LeetCode." },
+-  { v: "#137", u: "/ 47,924", l: "GSSoC '26 Top 1% (A-Tier)", s: "25,092 total points, active in 13 of 13 weeks. 34 PRs merged across 9 repos, 13 badges earned." },
++  { v: "1,710", u: "", l: "LC Rating & CF Pupil (1,361)", s: "LeetCode contest rating 1,710 (top 13.45%), Codeforces Pupil 1,361, CodeChef 1,137. 15 contests tracked on Codolio." },
++  { v: "420", u: "solved", l: "Problems Solved", s: "130 Easy, 176 Medium and 46 Hard, tracked on Codolio. The bar shows the difficulty split.", bar: true },
++  { v: "136", u: "days", l: "Best Solving Streak", s: "209 active days tracked on Codolio. 100 Days Badge 2026 on LeetCode." },
++  { v: "#137", u: "/ 47,924", l: "GSSoC '26 Top 0.3% (A-Tier)", s: "25,092 total points, active in 13 of 13 weeks. 34 PRs merged across 9 repos, 13 badges earned." },
++];
++
++const shipped = [
++  { tag: "Go · Meshery v1.0.77", t: "mesheryctl runtime panics", x: "Fixed three panics in environment view (nil API response, empty slice, TotalCount mismatch) with table-driven Go unit tests.", href: "https://github.com/meshery/meshery/pull/23365", pr: "meshery #23365", star: true },
++  { tag: "UI · Meshery v1.0.77", t: "Endless spinner on empty schemas", x: "Fixed the component form spinning forever when a component schema is empty. Follow-up hardening is in review as #23363.", href: "https://github.com/meshery/meshery/pull/23357", pr: "meshery #23357", star: true },
++  { tag: "Security · Blowhorn", t: "CSV formula injection", x: "Neutralized =, +, -, @, tab and CR triggers (even after leading whitespace) and quoted bare CRs, per OWASP CWE-1236. Merged with tests.", href: `${BH}/496`, pr: "blowhorn-site #496" },
++  { tag: "Reliability · Blowhorn", t: "Access key-rotation 403s", x: "Refetched Cloudflare signing certs once on an unknown kid instead of rejecting valid tokens for up to 10 minutes, while still failing closed on bad keys.", href: `${BH}/513`, pr: "blowhorn-site #513" },
++  { tag: "Security · Blowhorn", t: "Mail-scanner unsubscribes", x: "GET now renders a confirmation page and only POST changes state, so email security scanners can no longer unsubscribe users.", href: `${BH}/447`, pr: "blowhorn-site #447" },
++  { tag: "Correctness · Blowhorn", t: "Fleet table sorting", x: "Normalized storage units and sorted by precise byte counts, so fleet tables order correctly regardless of the unit shown.", href: `${BH}/507`, pr: "blowhorn-site #507" },
++];
++
++const quotes = [
++  { q: "Nice, targeted fix for the key-rotation 403s.", w: "Maintainer review", href: `${BH}/513`, on: "blowhorn-site #513" },
++  { q: "Nice cleanup — this does exactly what it says.", w: "Maintainer review", href: "https://github.com/blowhorn-ai/tells/pull/28", on: "tells #28" },
+ ];
+ 
+ const arsenal = [
+-  { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "C", "Python", "SQL"] },
++  { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "Go", "C", "Python", "SQL"] },
+   { t: "Frontend & Runtimes", i: ["React", "React Native", "Next.js", "HTML5", "CSS3", "Tailwind CSS", "Web Workers", "OffscreenCanvas"] },
+-  { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "Redis", "Celery", "Docker (Basics)", "Git/GitHub"] },
++  { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "REST & OpenAPI", "Redis", "Celery", "MongoDB", "Cloudflare Workers", "GitHub Actions", "Docker (Basics)", "Linux"] },
+   { t: "Algorithmic Strengths (LeetCode)", i: ["Dynamic Programming (36)", "Game Theory (10)", "Divide & Conquer (9)", "Greedy (33)", "Hash Tables (64)", "Math (80)"] },
+ ];
+ 
+-const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery", "AsyncAPI"];
++const marquee = ["C++", "Go", "TypeScript", "React", "React Native", "Next.js", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "MongoDB", "Cloudflare Workers", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery", "Layer5", "AsyncAPI"];
++
++const navItems = [
++  { l: "Demo", id: "demo" },
++  { l: "Shipped", id: "shipped" },
++  { l: "Projects", id: "projects" },
++  { l: "Open source", id: "oss" },
++  { l: "Contact", id: "contact" },
++];
+ 
+ const glance = [
+   { k: "Status", v: "Open to internships, 2026–27" },
+@@ -288,17 +318,21 @@ function LiveDemo() {
+ 
+ /* ---------- ⌘K command palette ---------- */
+ function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
++  // The dialog mounts only while open, so its query/selection state resets on every open.
++  return <AnimatePresence>{open && <PaletteDialog key="palette" onClose={onClose} />}</AnimatePresence>;
++}
++
++function PaletteDialog({ onClose }: { onClose: () => void }) {
+   const [q, setQ] = useState("");
+   const [idx, setIdx] = useState(0);
+   const cmds = useMemo(() => [
+-    { l: "Jump to live demo", a: () => go("demo") }, { l: "Jump to metrics", a: () => go("metrics") },
++    { l: "Jump to live demo", a: () => go("demo") }, { l: "Jump to shipped work", a: () => go("shipped") }, { l: "Jump to metrics", a: () => go("metrics") },
+     { l: "Jump to projects", a: () => go("projects") }, { l: "Jump to open source", a: () => go("oss") },
+     { l: "Jump to contact", a: () => go("contact") }, { l: "Copy email", a: () => copyText(LINKS.email) },
+     { l: "Send email", a: () => (window.location.href = `mailto:${LINKS.email}`) },
+     ...socials.map((s) => ({ l: `Open ${s.label}`, a: () => window.open(s.href, "_blank", "noopener,noreferrer") })),
+   ], []);
+   const list = cmds.filter((c) => c.l.toLowerCase().includes(q.toLowerCase()));
+-  useEffect(() => { if (open) { setQ(""); setIdx(0); } }, [open]);
+   const exec = (i: number) => { const c = list[i]; if (c) { onClose(); setTimeout(c.a, 50); } };
+   const onKey = (e: React.KeyboardEvent) => {
+     if (e.key === "Escape") onClose();
+@@ -307,8 +341,6 @@ function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
+     else if (e.key === "Enter") exec(idx);
+   };
+   return (
+-    <AnimatePresence>
+-      {open && (
+         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 px-4 pt-[15vh]" onClick={onClose}>
+           <motion.div initial={{ y: -8, scale: 0.98 }} animate={{ y: 0, scale: 1 }} exit={{ y: -8, scale: 0.98 }} role="dialog" aria-modal="true" aria-label="Command palette"
+             className="w-full max-w-lg overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-950 shadow-2xl" onClick={(e) => e.stopPropagation()} onKeyDown={onKey}>
+@@ -329,8 +361,6 @@ function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
+             </ul>
+           </motion.div>
+         </motion.div>
+-      )}
+-    </AnimatePresence>
+   );
+ }
+ 
+@@ -357,7 +387,22 @@ export default function Page() {
+       `}</style>
+       <Palette open={pal} onClose={() => setPal(false)} />
+ 
+-      <main className="relative min-h-screen overflow-x-hidden bg-[#09090b] font-sans text-zinc-300 antialiased selection:bg-[#10b981]/30">
++      <main className="relative min-h-screen overflow-x-clip bg-[#09090b] font-sans text-zinc-300 antialiased selection:bg-[#10b981]/30">
++        <nav aria-label="Primary" className="sticky top-0 z-40 border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-md">
++          <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-5 py-2.5 sm:px-8">
++            <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top" className={`rounded-md font-mono text-sm font-bold text-white ${focusRing}`}>
++              <span className="text-emerald-400">&gt;</span> abhinav<span className="text-emerald-400">_</span>
++            </button>
++            <div className="flex items-center gap-1">
++              {navItems.map((n) => (
++                <button key={n.id} type="button" onClick={() => go(n.id)} className={`hidden rounded-md px-2.5 py-1 font-mono text-xs text-zinc-400 transition-colors hover:text-emerald-400 md:inline-flex ${focusRing}`}>{n.l}</button>
++              ))}
++              <button type="button" onClick={() => setPal(true)} aria-label="Open command palette" className={`ml-1 inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 font-mono text-xs text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-400 ${focusRing}`}>
++                <Command className="h-3 w-3" aria-hidden="true" /> K
++              </button>
++            </div>
++          </div>
++        </nav>
+         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+           <div className="aurora absolute -top-32 left-[10%] h-[380px] w-[520px] rounded-full bg-emerald-500/20 blur-[130px]" />
+           <div className="aurora absolute -top-20 right-[5%] h-[320px] w-[420px] rounded-full bg-sky-500/15 blur-[130px] [animation-delay:-6s]" />
+@@ -378,9 +423,6 @@ export default function Page() {
+               <div className="flex items-center gap-3 font-mono text-xs text-zinc-400">
+                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-emerald-400" aria-hidden="true" /> Kalyani, WB</span>
+                 <Clock_ />
+-                <button type="button" onClick={() => setPal(true)} className={`hidden items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-400 sm:inline-flex ${focusRing}`}>
+-                  <Command className="h-3 w-3" aria-hidden="true" /> K
+-                </button>
+               </div>
+             </div>
+ 
+@@ -388,7 +430,7 @@ export default function Page() {
+             <h1 className="mt-2 text-5xl font-semibold tracking-tighter text-white sm:text-7xl lg:text-8xl">Abhinav Deval</h1>
+             <p className="mt-4 font-mono text-lg font-medium text-emerald-400 sm:text-2xl">Backend &amp; Cloud-Native Systems Engineer</p>
+             <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+-              I am a B.Tech ECE student at IIIT Kalyani who likes making things fast: browser tools that never touch a server, real-time sync across devices, and open-source PRs in Layer5 (CNCF) and AsyncAPI. Run the live demo below, then check the receipts.
++              I am a B.Tech ECE student at IIIT Kalyani who likes making things fast and reliable: browser tools that never touch a server, real-time sync across devices, and open-source fixes that have shipped in Meshery (CNCF) v1.0.77, with more in Layer5 and AsyncAPI. Run the live demo below, then check the receipts.
+             </p>
+             <ul className="mt-6 flex flex-wrap gap-2">
+               {badges.map((b) => <li key={b} className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 font-mono text-[11px] text-zinc-300">{b}</li>)}
+@@ -418,10 +460,40 @@ export default function Page() {
+           </div>
+ 
+           {/* Live demo */}
+-          <section id="demo" aria-label="Live demo" className="scroll-mt-4"><LiveDemo /></section>
++          <section id="demo" aria-label="Live demo" className="scroll-mt-16"><LiveDemo /></section>
++
++          {/* Shipped work */}
++          <section id="shipped" aria-label="Shipped and merged work" className="scroll-mt-16">
++            <Title icon={Rocket}>Shipped &amp; Merged</Title>
++            <p className="-mt-2 mb-5 max-w-2xl text-sm leading-relaxed text-zinc-400">
++              Small, focused PRs that start from a linked issue, ship with tests and land in production code. Two are in the official{" "}
++              <Ext href={LINKS.mesheryRelease} className="text-emerald-400 underline-offset-2 hover:underline">Meshery v1.0.77 release</Ext>; the rest are merged in Blowhorn&apos;s production worker (28 commits, 14 PRs, #4 human contributor).
++            </p>
++            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
++              {shipped.map((s) => (
++                <Card key={s.pr} glow={s.star} className="flex flex-col">
++                  <span className="w-fit rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-zinc-300">{s.tag}</span>
++                  <h3 className="mt-3 text-base font-bold text-white">{s.t}</h3>
++                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{s.x}</p>
++                  <div className="mt-auto pt-4"><PR href={s.href}>{s.pr}</PR></div>
++                </Card>
++              ))}
++            </div>
++            <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
++              {quotes.map((q) => (
++                <figure key={q.on} className="flex gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
++                  <Quote className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" aria-hidden="true" />
++                  <div>
++                    <blockquote className="text-sm leading-relaxed text-zinc-200">&ldquo;{q.q}&rdquo;</blockquote>
++                    <figcaption className="mt-2 font-mono text-[11px] text-zinc-500">{q.w} on <Ext href={q.href} className="text-emerald-400 hover:underline">{q.on}</Ext></figcaption>
++                  </div>
++                </figure>
++              ))}
++            </div>
++          </section>
+ 
+           {/* Metrics */}
+-          <section id="metrics" aria-label="Key metrics" className="grid scroll-mt-4 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
++          <section id="metrics" aria-label="Key metrics" className="grid scroll-mt-16 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+             {metrics.map((m) => (
+               <Card key={m.l} className="flex flex-col justify-between">
+                 <div>
+@@ -429,10 +501,10 @@ export default function Page() {
+                   <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">{m.l}</div>
+                   {m.bar && (
+                     <div className="mt-3">
+-                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="LeetCode: 112 easy, 151 medium, 32 hard">
+-                        <div style={{ width: "38%" }} className="bg-emerald-400" /><div style={{ width: "51.2%" }} className="bg-amber-400" /><div style={{ width: "10.8%" }} className="bg-rose-500" />
++                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="130 easy, 176 medium, 46 hard">
++                        <div style={{ width: "36.9%" }} className="bg-emerald-400" /><div style={{ width: "50%" }} className="bg-amber-400" /><div style={{ width: "13.1%" }} className="bg-rose-500" />
+                       </div>
+-                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">112 Easy</span><span className="text-amber-400">151 Med</span><span className="text-rose-400">32 Hard</span></div>
++                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">130 Easy</span><span className="text-amber-400">176 Med</span><span className="text-rose-400">46 Hard</span></div>
+                     </div>
+                   )}
+                 </div>
+@@ -442,7 +514,7 @@ export default function Page() {
+           </section>
+ 
+           {/* Projects */}
+-          <section id="projects" aria-label="Flagship systems projects" className="scroll-mt-4">
++          <section id="projects" aria-label="Flagship systems projects" className="scroll-mt-16">
+             <Title icon={Cpu}>Flagship Systems Projects</Title>
+             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+               <Card className="flex flex-col">
+@@ -461,26 +533,29 @@ export default function Page() {
+                   <h3 className="flex items-center gap-2 text-lg font-bold text-white">Vibrodo <Radio className="h-4 w-4 text-[#38bdf8]" aria-hidden="true" /></h3>
+                   <div className="flex h-6 items-center gap-0.5" aria-hidden="true">{[0, 0.2, 0.4, 0.1, 0.3].map((d, i) => <span key={i} className="bar h-5 w-1 rounded-full bg-emerald-400" style={{ animationDelay: `${d}s` }} />)}</div>
+                 </div>
+-                <p className="mt-0.5 text-xs text-zinc-400">Real-time synchronized audio platform · in development</p>
+-                <div className="mt-3 flex flex-wrap gap-1.5">{["React Native", "WebSockets", "Node.js", "State Machines"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
+-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Cross-platform audio streaming client with multi-device room synchronization over WebSockets, client-side state reconciliation, and background audio lifecycle handling.</p>
++                <p className="mt-0.5 text-xs text-zinc-400">Unified cloud &amp; local audio streaming · team of three</p>
++                <div className="mt-3 flex flex-wrap gap-1.5">{["React Native", "WebSockets", "Node.js", "MongoDB", "YouTube Data API v3"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
++                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Streams cloud tracks and local lossless or compressed files (FLAC, WAV, ALAC, MP3) in a single queue. Listening rooms keep multiple devices in sync over WebSockets by reconciling playback drift against server time.</p>
++                <p className="mt-2 text-xs leading-relaxed text-zinc-400">Built with a team across IIIT Kalyani and NIT Durgapur. The application code is private; the repo below is the architecture write-up, and I am happy to walk through it.</p>
+                 <div className="mt-auto flex flex-wrap gap-2 border-t border-zinc-800 pt-3.5 [margin-top:1.25rem]">
+-                  <Ext href={LINKS.vibrodoRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">GitHub Repo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
++                  <Ext href={LINKS.vibrodoRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">Architecture Write-up <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
+                 </div>
+               </Card>
+             </div>
+           </section>
+ 
+           {/* Open source */}
+-          <section id="oss" aria-label="Open source" className="scroll-mt-4">
++          <section id="oss" aria-label="Open source" className="scroll-mt-16">
+             <Title icon={Layers}>Open Source &amp; Backend Work</Title>
+             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+               <Card>
+-                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Server className="h-4 w-4 text-emerald-400" aria-hidden="true" /> Layer5 (CNCF) &amp; AsyncAPI</h3><span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-300">3 open PRs · 1 review</span></div>
++                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Server className="h-4 w-4 text-emerald-400" aria-hidden="true" /> In Review · Meshery, Layer5 &amp; AsyncAPI</h3><span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-300">5 open PRs · 1 review</span></div>
+                 <ul className="mt-3 space-y-3 text-sm leading-relaxed text-zinc-400">
+-                  <li><span className="font-semibold text-zinc-200">Layer5 Sistent: </span>Two open PRs in <span className="font-mono text-zinc-300">layer5io/sistent</span>: FormHelperText (<PR href={LINKS.pr1659}>PR #1659</PR>) and SubscriptionTable (<PR href={LINKS.pr1660}>PR #1660</PR>). Typed props, theme tokens, accessible labels and unit tests. Under review, feedback addressed.</li>
+-                  <li><span className="font-semibold text-zinc-200">AsyncAPI CLI: </span>Fixed <span className="font-mono text-zinc-300">asyncapi diff</span> printing an empty <span className="font-mono text-zinc-300">ValidationError</span> on unparsable documents (<PR href={LINKS.pr2313}>PR #2313</PR>, open).</li>
+-                  <li><span className="font-semibold text-zinc-200">Meshery review: </span>Reviewed a table-search crash fix in <span className="font-mono text-zinc-300">meshery/meshery</span> (<PR href={LINKS.pr22149}>PR #22149</PR>, by @mateusslezinsky). Explained why a second <span className="font-mono text-zinc-300">decodeURIComponent</span> on <span className="font-mono text-zinc-300">router.query</span> throws <span className="font-mono text-zinc-300">URIError</span> on a bare &apos;%&apos;, since Next.js already decodes it.</li>
++                  <li><span className="font-semibold text-zinc-200">Meshery (CNCF): </span>Follow-up to the shipped UI fix: shallow-copies the fetched component schema and its <span className="font-mono text-zinc-300">properties</span> map and guards against array values, so form code can no longer mutate the cached definition (<PR href={LINKS.pr23363}>PR #23363</PR>, addressing reviewer notes).</li>
++                  <li><span className="font-semibold text-zinc-200">mesheryctl-axi: </span><span className="font-mono text-zinc-300">system status</span> printed <span className="font-mono text-zinc-300">provider: null</span>. Now resolves the provider from config, then the token file, then the server (3 s timeout), else <span className="font-mono text-zinc-300">Unknown</span> (<PR href={LINKS.pr86}>PR #86</PR>, approved).</li>
++                  <li><span className="font-semibold text-zinc-200">Layer5 Sistent: </span>FormHelperText (<PR href={LINKS.pr1659}>PR #1659</PR>) and SubscriptionTable (<PR href={LINKS.pr1660}>PR #1660</PR>). Typed props, theme tokens, accessible labels and unit tests.</li>
++                  <li><span className="font-semibold text-zinc-200">AsyncAPI CLI: </span>Fixed <span className="font-mono text-zinc-300">asyncapi diff</span> printing an empty <span className="font-mono text-zinc-300">ValidationError</span> on unparsable documents (<PR href={LINKS.pr2313}>PR #2313</PR>).</li>
++                  <li><span className="font-semibold text-zinc-200">Code review: </span>Explained on <PR href={LINKS.pr22149}>meshery #22149</PR> why a second <span className="font-mono text-zinc-300">decodeURIComponent</span> on <span className="font-mono text-zinc-300">router.query</span> throws <span className="font-mono text-zinc-300">URIError</span> on a bare &apos;%&apos;, since Next.js already decodes it.</li>
+                 </ul>
+               </Card>
+               <Card>
+@@ -510,7 +585,7 @@ export default function Page() {
+           </section>
+ 
+           {/* Contact terminal */}
+-          <footer id="contact" aria-label="Contact" className="scroll-mt-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-zinc-950 shadow-[0_0_50px_-15px_rgba(16,185,129,0.3)]">
++          <footer id="contact" aria-label="Contact" className="scroll-mt-16 overflow-hidden rounded-2xl border border-emerald-500/30 bg-zinc-950 shadow-[0_0_50px_-15px_rgba(16,185,129,0.3)]">
+             <div className="flex items-center gap-1.5 border-b border-zinc-800 bg-zinc-900/50 px-4 py-2.5">
+               <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80" /><span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" /><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+               <span className="ml-2 font-mono text-xs text-zinc-400">abhinav@iiit-kalyani: ~ (zsh)</span>
+diff --git a/app/robots.ts b/app/robots.ts
+new file mode 100644
+index 0000000..12be9f3
+--- /dev/null
++++ b/app/robots.ts
+@@ -0,0 +1,8 @@
++import type { MetadataRoute } from "next";
++
++export default function robots(): MetadataRoute.Robots {
++  return {
++    rules: { userAgent: "*", allow: "/" },
++    sitemap: "https://abhinavkdeval.vercel.app/sitemap.xml",
++  };
++}
+diff --git a/app/sitemap.ts b/app/sitemap.ts
+new file mode 100644
+index 0000000..307789e
+--- /dev/null
++++ b/app/sitemap.ts
+@@ -0,0 +1,5 @@
++import type { MetadataRoute } from "next";
++
++export default function sitemap(): MetadataRoute.Sitemap {
++  return [{ url: "https://abhinavkdeval.vercel.app", changeFrequency: "monthly", priority: 1 }];
++}
+diff --git a/app/twitter-image.tsx b/app/twitter-image.tsx
+new file mode 100644
+index 0000000..395ae87
+--- /dev/null
++++ b/app/twitter-image.tsx
+@@ -0,0 +1,9 @@
++import { renderOg } from "./_og";
++
++export const alt = "Abhinav Deval — Backend & Cloud-Native Systems Engineer";
++export const size = { width: 1200, height: 630 };
++export const contentType = "image/png";
++
++export default function Image() {
++  return renderOg();
++}
+diff --git a/public/file.svg b/public/file.svg
+deleted file mode 100644
+index 004145c..0000000
+--- a/public/file.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+\ No newline at end of file
+diff --git a/public/globe.svg b/public/globe.svg
+deleted file mode 100644
+index 567f17b..0000000
+--- a/public/globe.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+\ No newline at end of file
+diff --git a/public/next.svg b/public/next.svg
+deleted file mode 100644
+index 5174b28..0000000
+--- a/public/next.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+\ No newline at end of file
+diff --git a/public/vercel.svg b/public/vercel.svg
+deleted file mode 100644
+index 7705396..0000000
+--- a/public/vercel.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+\ No newline at end of file
+diff --git a/public/window.svg b/public/window.svg
+deleted file mode 100644
+index b2b2a44..0000000
+--- a/public/window.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+\ No newline at end of file
+-- 
+2.43.0
+

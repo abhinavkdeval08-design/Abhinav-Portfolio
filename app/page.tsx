@@ -5,6 +5,7 @@ import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import {
   Code2, Trophy, Mail, ExternalLink, GitPullRequest, Flame, Cpu, Server, Layers, Flag,
   Terminal, Compass, Info, Check, Copy, Clock, MapPin, ShieldCheck, Radio, Search, UploadCloud, Download, Command,
+  Rocket, Quote,
 } from "lucide-react";
 
 /* ---------- Brand icons ---------- */
@@ -33,11 +34,16 @@ const LINKS = {
   enclaveDemo: "https://enclave-pdf.vercel.app",
   enclaveRepo: `${GH}/EnclavePDF`,
   vibrodoRepo: `${GH}/Vibrodo`,
+  mesheryRelease: "https://github.com/meshery/meshery/releases/tag/v1.0.77",
   pr1659: "https://github.com/layer5io/sistent/pull/1659",
   pr1660: "https://github.com/layer5io/sistent/pull/1660",
   pr22149: "https://github.com/meshery/meshery/pull/22149",
+  pr23363: "https://github.com/meshery/meshery/pull/23363",
+  pr86: "https://github.com/meshery-extensions/mesheryctl-axi/pull/86",
   pr2313: "https://github.com/asyncapi/cli/pull/2313",
 };
+
+const BH = "https://github.com/blowhorn-ai/blowhorn-site/pull";
 
 const socials = [
   { label: "GitHub", href: LINKS.github, icon: GithubIcon },
@@ -49,27 +55,51 @@ const socials = [
 
 const badges = [
   "IIIT Kalyani '29",
-  "Contributing to Layer5 (CNCF) & AsyncAPI",
-  "GSSoC '26 Global Rank #137 (Top 1%)",
-  "LeetCode 1,710 (125-Day Streak)",
-  "Codeforces Pupil (1,359)",
+  "Shipped in Meshery v1.0.77 (CNCF)",
+  "#4 human contributor @ Blowhorn",
+  "Layer5 (CNCF) & AsyncAPI contributor",
+  "GSSoC '26 Rank #137 of 47,924 (Top 0.3%)",
+  "LeetCode 1,710 (136-Day Best Streak)",
+  "Codeforces Pupil (1,361)",
 ];
 
 const metrics = [
-  { v: "1,710", u: "", l: "LC Rating & CF Pupil (1,359)", s: "LeetCode contest rating 1,710 (top 13.45%) and Codeforces Pupil 1,359. Contest history is tracked on Codolio." },
-  { v: "388", u: "solved", l: "Problems Solved", s: "LeetCode 295, GeeksforGeeks 46, Codeforces 47, tracked on Codolio. The bar shows the LeetCode split.", bar: true },
-  { v: "125", u: "days", l: "Solving Streak", s: "189 active days tracked on Codolio. 100 Days Badge 2026 on LeetCode." },
-  { v: "#137", u: "/ 47,924", l: "GSSoC '26 Top 1% (A-Tier)", s: "25,092 total points, active in 13 of 13 weeks. 34 PRs merged across 9 repos, 13 badges earned." },
+  { v: "1,710", u: "", l: "LC Rating & CF Pupil (1,361)", s: "LeetCode contest rating 1,710 (top 13.45%), Codeforces Pupil 1,361, CodeChef 1,137. 15 contests tracked on Codolio." },
+  { v: "420", u: "solved", l: "Problems Solved", s: "130 Easy, 176 Medium and 46 Hard, tracked on Codolio. The bar shows the difficulty split.", bar: true },
+  { v: "136", u: "days", l: "Best Solving Streak", s: "209 active days tracked on Codolio. 100 Days Badge 2026 on LeetCode." },
+  { v: "#137", u: "/ 47,924", l: "GSSoC '26 Top 0.3% (A-Tier)", s: "25,092 total points, active in 13 of 13 weeks. 34 PRs merged across 9 repos, 13 badges earned." },
+];
+
+const shipped = [
+  { tag: "Go · Meshery v1.0.77", t: "mesheryctl runtime panics", x: "Fixed three panics in environment view (nil API response, empty slice, TotalCount mismatch) with table-driven Go unit tests.", href: "https://github.com/meshery/meshery/pull/23365", pr: "meshery #23365", star: true },
+  { tag: "UI · Meshery v1.0.77", t: "Endless spinner on empty schemas", x: "Fixed the component form spinning forever when a component schema is empty. Follow-up hardening is in review as #23363.", href: "https://github.com/meshery/meshery/pull/23357", pr: "meshery #23357", star: true },
+  { tag: "Security · Blowhorn", t: "CSV formula injection", x: "Neutralized =, +, -, @, tab and CR triggers (even after leading whitespace) and quoted bare CRs, per OWASP CWE-1236. Merged with tests.", href: `${BH}/496`, pr: "blowhorn-site #496" },
+  { tag: "Reliability · Blowhorn", t: "Access key-rotation 403s", x: "Refetched Cloudflare signing certs once on an unknown kid instead of rejecting valid tokens for up to 10 minutes, while still failing closed on bad keys.", href: `${BH}/513`, pr: "blowhorn-site #513" },
+  { tag: "Security · Blowhorn", t: "Mail-scanner unsubscribes", x: "GET now renders a confirmation page and only POST changes state, so email security scanners can no longer unsubscribe users.", href: `${BH}/447`, pr: "blowhorn-site #447" },
+  { tag: "Correctness · Blowhorn", t: "Fleet table sorting", x: "Normalized storage units and sorted by precise byte counts, so fleet tables order correctly regardless of the unit shown.", href: `${BH}/507`, pr: "blowhorn-site #507" },
+];
+
+const quotes = [
+  { q: "Nice, targeted fix for the key-rotation 403s.", w: "Maintainer review", href: `${BH}/513`, on: "blowhorn-site #513" },
+  { q: "Nice cleanup — this does exactly what it says.", w: "Maintainer review", href: "https://github.com/blowhorn-ai/tells/pull/28", on: "tells #28" },
 ];
 
 const arsenal = [
-  { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "C", "Python", "SQL"] },
+  { t: "Languages", i: ["Modern C++", "TypeScript", "JavaScript", "Go", "C", "Python", "SQL"] },
   { t: "Frontend & Runtimes", i: ["React", "React Native", "Next.js", "HTML5", "CSS3", "Tailwind CSS", "Web Workers", "OffscreenCanvas"] },
-  { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "Redis", "Celery", "Docker (Basics)", "Git/GitHub"] },
+  { t: "Backend & Infra", i: ["Node.js", "Express", "WebSockets", "REST & OpenAPI", "Redis", "Celery", "MongoDB", "Cloudflare Workers", "GitHub Actions", "Docker (Basics)", "Linux"] },
   { t: "Algorithmic Strengths (LeetCode)", i: ["Dynamic Programming (36)", "Game Theory (10)", "Divide & Conquer (9)", "Greedy (33)", "Hash Tables (64)", "Math (80)"] },
 ];
 
-const marquee = ["C++", "TypeScript", "React", "React Native", "Next.js", "HTML", "CSS", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery", "AsyncAPI"];
+const marquee = ["C++", "Go", "TypeScript", "React", "React Native", "Next.js", "Web Workers", "WebSockets", "Redis", "Celery", "Node.js", "MongoDB", "Cloudflare Workers", "Docker", "pdf-lib", "pdfjs-dist", "Tailwind", "CNCF", "Meshery", "Layer5", "AsyncAPI"];
+
+const navItems = [
+  { l: "Demo", id: "demo" },
+  { l: "Shipped", id: "shipped" },
+  { l: "Projects", id: "projects" },
+  { l: "Open source", id: "oss" },
+  { l: "Contact", id: "contact" },
+];
 
 const glance = [
   { k: "Status", v: "Open to internships, 2026–27" },
@@ -288,17 +318,21 @@ function LiveDemo() {
 
 /* ---------- ⌘K command palette ---------- */
 function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
+  // The dialog mounts only while open, so its query/selection state resets on every open.
+  return <AnimatePresence>{open && <PaletteDialog key="palette" onClose={onClose} />}</AnimatePresence>;
+}
+
+function PaletteDialog({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
   const cmds = useMemo(() => [
-    { l: "Jump to live demo", a: () => go("demo") }, { l: "Jump to metrics", a: () => go("metrics") },
+    { l: "Jump to live demo", a: () => go("demo") }, { l: "Jump to shipped work", a: () => go("shipped") }, { l: "Jump to metrics", a: () => go("metrics") },
     { l: "Jump to projects", a: () => go("projects") }, { l: "Jump to open source", a: () => go("oss") },
     { l: "Jump to contact", a: () => go("contact") }, { l: "Copy email", a: () => copyText(LINKS.email) },
     { l: "Send email", a: () => (window.location.href = `mailto:${LINKS.email}`) },
     ...socials.map((s) => ({ l: `Open ${s.label}`, a: () => window.open(s.href, "_blank", "noopener,noreferrer") })),
   ], []);
   const list = cmds.filter((c) => c.l.toLowerCase().includes(q.toLowerCase()));
-  useEffect(() => { if (open) { setQ(""); setIdx(0); } }, [open]);
   const exec = (i: number) => { const c = list[i]; if (c) { onClose(); setTimeout(c.a, 50); } };
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") onClose();
@@ -307,8 +341,6 @@ function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
     else if (e.key === "Enter") exec(idx);
   };
   return (
-    <AnimatePresence>
-      {open && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 px-4 pt-[15vh]" onClick={onClose}>
           <motion.div initial={{ y: -8, scale: 0.98 }} animate={{ y: 0, scale: 1 }} exit={{ y: -8, scale: 0.98 }} role="dialog" aria-modal="true" aria-label="Command palette"
             className="w-full max-w-lg overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-950 shadow-2xl" onClick={(e) => e.stopPropagation()} onKeyDown={onKey}>
@@ -329,8 +361,6 @@ function Palette({ open, onClose }: { open: boolean; onClose: () => void }) {
             </ul>
           </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
   );
 }
 
@@ -357,7 +387,22 @@ export default function Page() {
       `}</style>
       <Palette open={pal} onClose={() => setPal(false)} />
 
-      <main className="relative min-h-screen overflow-x-hidden bg-[#09090b] font-sans text-zinc-300 antialiased selection:bg-[#10b981]/30">
+      <main className="relative min-h-screen overflow-x-clip bg-[#09090b] font-sans text-zinc-300 antialiased selection:bg-[#10b981]/30">
+        <nav aria-label="Primary" className="sticky top-0 z-40 border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-md">
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-5 py-2.5 sm:px-8">
+            <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top" className={`rounded-md font-mono text-sm font-bold text-white ${focusRing}`}>
+              <span className="text-emerald-400">&gt;</span> abhinav<span className="text-emerald-400">_</span>
+            </button>
+            <div className="flex items-center gap-1">
+              {navItems.map((n) => (
+                <button key={n.id} type="button" onClick={() => go(n.id)} className={`hidden rounded-md px-2.5 py-1 font-mono text-xs text-zinc-400 transition-colors hover:text-emerald-400 md:inline-flex ${focusRing}`}>{n.l}</button>
+              ))}
+              <button type="button" onClick={() => setPal(true)} aria-label="Open command palette" className={`ml-1 inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 font-mono text-xs text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-400 ${focusRing}`}>
+                <Command className="h-3 w-3" aria-hidden="true" /> K
+              </button>
+            </div>
+          </div>
+        </nav>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="aurora absolute -top-32 left-[10%] h-[380px] w-[520px] rounded-full bg-emerald-500/20 blur-[130px]" />
           <div className="aurora absolute -top-20 right-[5%] h-[320px] w-[420px] rounded-full bg-sky-500/15 blur-[130px] [animation-delay:-6s]" />
@@ -378,9 +423,6 @@ export default function Page() {
               <div className="flex items-center gap-3 font-mono text-xs text-zinc-400">
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-emerald-400" aria-hidden="true" /> Kalyani, WB</span>
                 <Clock_ />
-                <button type="button" onClick={() => setPal(true)} className={`hidden items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-400 sm:inline-flex ${focusRing}`}>
-                  <Command className="h-3 w-3" aria-hidden="true" /> K
-                </button>
               </div>
             </div>
 
@@ -388,7 +430,7 @@ export default function Page() {
             <h1 className="mt-2 text-5xl font-semibold tracking-tighter text-white sm:text-7xl lg:text-8xl">Abhinav Deval</h1>
             <p className="mt-4 font-mono text-lg font-medium text-emerald-400 sm:text-2xl">Backend &amp; Cloud-Native Systems Engineer</p>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-              I am a B.Tech ECE student at IIIT Kalyani who likes making things fast: browser tools that never touch a server, real-time sync across devices, and open-source PRs in Layer5 (CNCF) and AsyncAPI. Run the live demo below, then check the receipts.
+              I am a B.Tech ECE student at IIIT Kalyani who likes making things fast and reliable: browser tools that never touch a server, real-time sync across devices, and open-source fixes that have shipped in Meshery (CNCF) v1.0.77, with more in Layer5 and AsyncAPI. Run the live demo below, then check the receipts.
             </p>
             <ul className="mt-6 flex flex-wrap gap-2">
               {badges.map((b) => <li key={b} className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 font-mono text-[11px] text-zinc-300">{b}</li>)}
@@ -418,10 +460,40 @@ export default function Page() {
           </div>
 
           {/* Live demo */}
-          <section id="demo" aria-label="Live demo" className="scroll-mt-4"><LiveDemo /></section>
+          <section id="demo" aria-label="Live demo" className="scroll-mt-16"><LiveDemo /></section>
+
+          {/* Shipped work */}
+          <section id="shipped" aria-label="Shipped and merged work" className="scroll-mt-16">
+            <Title icon={Rocket}>Shipped &amp; Merged</Title>
+            <p className="-mt-2 mb-5 max-w-2xl text-sm leading-relaxed text-zinc-400">
+              Small, focused PRs that start from a linked issue, ship with tests and land in production code. Two are in the official{" "}
+              <Ext href={LINKS.mesheryRelease} className="text-emerald-400 underline-offset-2 hover:underline">Meshery v1.0.77 release</Ext>; the rest are merged in Blowhorn&apos;s production worker (28 commits, 14 PRs, #4 human contributor).
+            </p>
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {shipped.map((s) => (
+                <Card key={s.pr} glow={s.star} className="flex flex-col">
+                  <span className="w-fit rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-zinc-300">{s.tag}</span>
+                  <h3 className="mt-3 text-base font-bold text-white">{s.t}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{s.x}</p>
+                  <div className="mt-auto pt-4"><PR href={s.href}>{s.pr}</PR></div>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+              {quotes.map((q) => (
+                <figure key={q.on} className="flex gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+                  <Quote className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" aria-hidden="true" />
+                  <div>
+                    <blockquote className="text-sm leading-relaxed text-zinc-200">&ldquo;{q.q}&rdquo;</blockquote>
+                    <figcaption className="mt-2 font-mono text-[11px] text-zinc-500">{q.w} on <Ext href={q.href} className="text-emerald-400 hover:underline">{q.on}</Ext></figcaption>
+                  </div>
+                </figure>
+              ))}
+            </div>
+          </section>
 
           {/* Metrics */}
-          <section id="metrics" aria-label="Key metrics" className="grid scroll-mt-4 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <section id="metrics" aria-label="Key metrics" className="grid scroll-mt-16 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {metrics.map((m) => (
               <Card key={m.l} className="flex flex-col justify-between">
                 <div>
@@ -429,10 +501,10 @@ export default function Page() {
                   <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">{m.l}</div>
                   {m.bar && (
                     <div className="mt-3">
-                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="LeetCode: 112 easy, 151 medium, 32 hard">
-                        <div style={{ width: "38%" }} className="bg-emerald-400" /><div style={{ width: "51.2%" }} className="bg-amber-400" /><div style={{ width: "10.8%" }} className="bg-rose-500" />
+                      <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-800" role="img" aria-label="130 easy, 176 medium, 46 hard">
+                        <div style={{ width: "36.9%" }} className="bg-emerald-400" /><div style={{ width: "50%" }} className="bg-amber-400" /><div style={{ width: "13.1%" }} className="bg-rose-500" />
                       </div>
-                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">112 Easy</span><span className="text-amber-400">151 Med</span><span className="text-rose-400">32 Hard</span></div>
+                      <div className="flex justify-between pt-1 font-mono text-[10px] font-medium"><span className="text-emerald-400">130 Easy</span><span className="text-amber-400">176 Med</span><span className="text-rose-400">46 Hard</span></div>
                     </div>
                   )}
                 </div>
@@ -442,7 +514,7 @@ export default function Page() {
           </section>
 
           {/* Projects */}
-          <section id="projects" aria-label="Flagship systems projects" className="scroll-mt-4">
+          <section id="projects" aria-label="Flagship systems projects" className="scroll-mt-16">
             <Title icon={Cpu}>Flagship Systems Projects</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Card className="flex flex-col">
@@ -461,26 +533,29 @@ export default function Page() {
                   <h3 className="flex items-center gap-2 text-lg font-bold text-white">Vibrodo <Radio className="h-4 w-4 text-[#38bdf8]" aria-hidden="true" /></h3>
                   <div className="flex h-6 items-center gap-0.5" aria-hidden="true">{[0, 0.2, 0.4, 0.1, 0.3].map((d, i) => <span key={i} className="bar h-5 w-1 rounded-full bg-emerald-400" style={{ animationDelay: `${d}s` }} />)}</div>
                 </div>
-                <p className="mt-0.5 text-xs text-zinc-400">Real-time synchronized audio platform · in development</p>
-                <div className="mt-3 flex flex-wrap gap-1.5">{["React Native", "WebSockets", "Node.js", "State Machines"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Cross-platform audio streaming client with multi-device room synchronization over WebSockets, client-side state reconciliation, and background audio lifecycle handling.</p>
+                <p className="mt-0.5 text-xs text-zinc-400">Unified cloud &amp; local audio streaming · team of three</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">{["React Native", "WebSockets", "Node.js", "MongoDB", "YouTube Data API v3"].map((s) => <Tag key={s}>{s}</Tag>)}</div>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-300">Streams cloud tracks and local lossless or compressed files (FLAC, WAV, ALAC, MP3) in a single queue. Listening rooms keep multiple devices in sync over WebSockets by reconciling playback drift against server time.</p>
+                <p className="mt-2 text-xs leading-relaxed text-zinc-400">Built with a team across IIIT Kalyani and NIT Durgapur. The application code is private; the repo below is the architecture write-up, and I am happy to walk through it.</p>
                 <div className="mt-auto flex flex-wrap gap-2 border-t border-zinc-800 pt-3.5 [margin-top:1.25rem]">
-                  <Ext href={LINKS.vibrodoRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">GitHub Repo <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
+                  <Ext href={LINKS.vibrodoRepo} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-emerald-500/50 hover:text-emerald-400">Architecture Write-up <ExternalLink className="h-3 w-3" aria-hidden="true" /></Ext>
                 </div>
               </Card>
             </div>
           </section>
 
           {/* Open source */}
-          <section id="oss" aria-label="Open source" className="scroll-mt-4">
+          <section id="oss" aria-label="Open source" className="scroll-mt-16">
             <Title icon={Layers}>Open Source &amp; Backend Work</Title>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Card>
-                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Server className="h-4 w-4 text-emerald-400" aria-hidden="true" /> Layer5 (CNCF) &amp; AsyncAPI</h3><span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-300">3 open PRs · 1 review</span></div>
+                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-sm font-bold text-white"><Server className="h-4 w-4 text-emerald-400" aria-hidden="true" /> In Review · Meshery, Layer5 &amp; AsyncAPI</h3><span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-300">5 open PRs · 1 review</span></div>
                 <ul className="mt-3 space-y-3 text-sm leading-relaxed text-zinc-400">
-                  <li><span className="font-semibold text-zinc-200">Layer5 Sistent: </span>Two open PRs in <span className="font-mono text-zinc-300">layer5io/sistent</span>: FormHelperText (<PR href={LINKS.pr1659}>PR #1659</PR>) and SubscriptionTable (<PR href={LINKS.pr1660}>PR #1660</PR>). Typed props, theme tokens, accessible labels and unit tests. Under review, feedback addressed.</li>
-                  <li><span className="font-semibold text-zinc-200">AsyncAPI CLI: </span>Fixed <span className="font-mono text-zinc-300">asyncapi diff</span> printing an empty <span className="font-mono text-zinc-300">ValidationError</span> on unparsable documents (<PR href={LINKS.pr2313}>PR #2313</PR>, open).</li>
-                  <li><span className="font-semibold text-zinc-200">Meshery review: </span>Reviewed a table-search crash fix in <span className="font-mono text-zinc-300">meshery/meshery</span> (<PR href={LINKS.pr22149}>PR #22149</PR>, by @mateusslezinsky). Explained why a second <span className="font-mono text-zinc-300">decodeURIComponent</span> on <span className="font-mono text-zinc-300">router.query</span> throws <span className="font-mono text-zinc-300">URIError</span> on a bare &apos;%&apos;, since Next.js already decodes it.</li>
+                  <li><span className="font-semibold text-zinc-200">Meshery (CNCF): </span>Follow-up to the shipped UI fix: shallow-copies the fetched component schema and its <span className="font-mono text-zinc-300">properties</span> map and guards against array values, so form code can no longer mutate the cached definition (<PR href={LINKS.pr23363}>PR #23363</PR>, addressing reviewer notes).</li>
+                  <li><span className="font-semibold text-zinc-200">mesheryctl-axi: </span><span className="font-mono text-zinc-300">system status</span> printed <span className="font-mono text-zinc-300">provider: null</span>. Now resolves the provider from config, then the token file, then the server (3 s timeout), else <span className="font-mono text-zinc-300">Unknown</span> (<PR href={LINKS.pr86}>PR #86</PR>, approved).</li>
+                  <li><span className="font-semibold text-zinc-200">Layer5 Sistent: </span>FormHelperText (<PR href={LINKS.pr1659}>PR #1659</PR>) and SubscriptionTable (<PR href={LINKS.pr1660}>PR #1660</PR>). Typed props, theme tokens, accessible labels and unit tests.</li>
+                  <li><span className="font-semibold text-zinc-200">AsyncAPI CLI: </span>Fixed <span className="font-mono text-zinc-300">asyncapi diff</span> printing an empty <span className="font-mono text-zinc-300">ValidationError</span> on unparsable documents (<PR href={LINKS.pr2313}>PR #2313</PR>).</li>
+                  <li><span className="font-semibold text-zinc-200">Code review: </span>Explained on <PR href={LINKS.pr22149}>meshery #22149</PR> why a second <span className="font-mono text-zinc-300">decodeURIComponent</span> on <span className="font-mono text-zinc-300">router.query</span> throws <span className="font-mono text-zinc-300">URIError</span> on a bare &apos;%&apos;, since Next.js already decodes it.</li>
                 </ul>
               </Card>
               <Card>
@@ -510,7 +585,7 @@ export default function Page() {
           </section>
 
           {/* Contact terminal */}
-          <footer id="contact" aria-label="Contact" className="scroll-mt-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-zinc-950 shadow-[0_0_50px_-15px_rgba(16,185,129,0.3)]">
+          <footer id="contact" aria-label="Contact" className="scroll-mt-16 overflow-hidden rounded-2xl border border-emerald-500/30 bg-zinc-950 shadow-[0_0_50px_-15px_rgba(16,185,129,0.3)]">
             <div className="flex items-center gap-1.5 border-b border-zinc-800 bg-zinc-900/50 px-4 py-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80" /><span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" /><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
               <span className="ml-2 font-mono text-xs text-zinc-400">abhinav@iiit-kalyani: ~ (zsh)</span>

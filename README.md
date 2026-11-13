@@ -4,7 +4,7 @@
 
 **Systems & Cloud-Native Software Engineer**
 
-B.Tech ECE at IIIT Kalyani (Class of 2029) · CNCF Meshery contributor · GSSoC '26 Global Rank #111
+B.Tech ECE at IIIT Kalyani (Class of 2029) · Fixes shipped in Meshery v1.0.77 (CNCF) · GSSoC '26 Global Rank #137 of 47,924
 
 [**Portfolio →**](https://abhinavkdeval.vercel.app) · [**EnclavePDF (live) →**](https://enclave-pdf.vercel.app) · [**EnclavePDF (repo) →**](https://github.com/abhinavkdeval08-design/EnclavePDF)
 
@@ -41,6 +41,7 @@ My personal portfolio, built as a small product instead of a static page. The ce
   - worker time
   - longest frame, checked against the 16 ms budget, to show the main thread stayed responsive (`requestAnimationFrame` gaps)
   - outbound network requests, read from the `PerformanceResourceTiming` API (expected: 0)
+- **Receipts, not claims.** A "Shipped & Merged" section links every PR to its source: two fixes in the official [Meshery v1.0.77 release](https://github.com/meshery/meshery/releases/tag/v1.0.77) (Go CLI and UI) and security and reliability fixes merged in Blowhorn's production worker, with maintainer quotes.
 - **⌘K / Ctrl+K command palette.** Jump between sections, copy my email, or open any profile with the keyboard.
 - **Cheap interactions.** The card spotlight updates CSS variables directly on the DOM node, so mouse movement causes no React re-renders. The live IST clock sits in its own memoized component, so it ticks without re-rendering the page.
 - **Accessible by default.** Keyboard focus rings, `aria` labels, and `prefers-reduced-motion` support for both CSS and Framer Motion animations.
@@ -70,7 +71,9 @@ Next.js (App Router) · React · TypeScript · Tailwind CSS · Framer Motion · 
 app/
 ├── page.tsx             # The whole page: sections, live demo, command palette
 ├── compress.worker.ts   # Web Worker that does the PDF compression
-├── layout.tsx           # Fonts and SEO metadata
+├── layout.tsx           # Fonts, SEO metadata and Person JSON-LD
+├── opengraph-image.tsx  # Social preview image (shared renderer in _og.tsx)
+├── robots.ts / sitemap.ts
 └── globals.css
 ```
 
@@ -89,7 +92,7 @@ Other scripts: `npm run build` for a production build, `npm run lint` for ESLint
 
 ## Make it yours
 
-All profile links and contact details live in the `LINKS` object at the top of `app/page.tsx`. Update the data arrays right below it (metrics, projects, arsenal) and the rest of the page follows.
+All profile links and contact details live in the `LINKS` object at the top of `app/page.tsx`. Update the data arrays right below it (metrics, shipped work, arsenal) and the rest of the page follows.
 
 ## Deploy
 
